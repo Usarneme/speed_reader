@@ -16,6 +16,31 @@ https://docs.expo.io/get-started/installation/
 npm install --global expo-cli
 ```
 
+### Android Studio (Plus Android Emulator)
+
+https://docs.expo.io/workflow/android-studio-emulator/
+
+*NOTE: Requires Security & Privacy setting change which requires a system restart.
+
+Running the emulator: https://developer.android.com/studio/run/emulator
+
+1. Android Emulator installed by default installation of Android Studio. Verify with Preferences - SDK Manager - SDK Tools - Android Emulator
+2. Open AVD Manager in Android Studio to select and install an Android device to emulate (download sources can be slow)
+
+Android Debug Bridge install directions:
+
+https://docs.expo.io/workflow/android-studio-emulator/
+
+*NOTE: You'll need to source or restart terminal after updating your bash_profile/zshrc
+
+```sh
+adb version
+```
+
+---
+
+## Tutorials, Articles, Docs
+
 ### React Native Plus Firebase
 
 https://github.com/instamobile/react-native-firebase
@@ -28,8 +53,3 @@ npm install
 react-native run-android // react-native run-ios
 ```
 
-### Android Studio (Plus Android Emulator)
-
-https://docs.expo.io/workflow/android-studio-emulator/
-
-*NOTE: Requires Security & Privacy setting change which requires a system restart.
