@@ -9,7 +9,7 @@ import * as React from 'react';
 
 import Colors from '../constants/Colors';
 import { useColorScheme } from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
+import TabOneScreen from '../screens/HomeScreen';
 import ReaderScreen from '../screens/ReaderScreen';
 
 import { BottomTabParamList, TabOneParamList, ReaderParamList } from '../types';
@@ -71,7 +71,7 @@ function ReaderNavigator() {
       <SpeedReaderStack.Screen
         name="ReaderScreen"
         component={ReaderScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
+        options={{ headerTitle: 'spdrdr' }}
       />
     </SpeedReaderStack.Navigator>
   );
