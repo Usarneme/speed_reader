@@ -33,6 +33,10 @@ https://docs.expo.io/workflow/android-studio-emulator/
 
 *NOTE: You'll need to source or restart terminal after updating your bash_profile/zshrc
 
+Expo has "Managed" and "Bare" initializations; the Managed defaults to TypeScript with React Native routing.
+Expo app requires Expo SDK 39+ (current latest is 42 as of this writing 7/16/21). Once Expo SDK is outdated you cannot continue to update your app.
+
+
 ```sh
 adb version
 ```
