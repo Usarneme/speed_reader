@@ -49,3 +49,7 @@ GPLv3
 [Research.md](Research.md)
 
 ---
+
+## Copyright
+
+&copy; 2021 Tom/Usarneme
