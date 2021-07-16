@@ -20,26 +20,29 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
 
-  // useEffect(() => {
-  //   const usersRef = firebase.firestore().collection('users');
-  //   firebase.auth().onAuthStateChanged(user => {
-  //     if (user) {
-  //       usersRef
-  //         .doc(user.uid)
-  //         .get()
-  //         .then((document) => {
-  //           const userData = document.data()
-  //           setLoading(false)
-  //           setUser(userData)
-  //         })
-  //         .catch((error) => {
-  //           setLoading(false)
-  //         });
-  //     } else {
-  //       setLoading(false)
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    const usersRef = firebase.firestore().collection('users');
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        usersRef
+          .doc(user.uid)
+          .get()
+          .then((document) => {
+            const userData = document.data()
+            setLoading(false)
+            setUser(userData)
+          })
+          .catch((error) => {
+            console.log("ERROR AUTHENTICATING")
+            console.dir(error)
+            setLoading(false)
+          });
+      } else {
+        console.log("NO USER FOUND")
+        setLoading(false)
+      }
+    });
+  }, []);
 
   if (loading) {
     return (
