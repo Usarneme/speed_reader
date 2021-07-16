@@ -2,11 +2,13 @@
 
 Might become part of an article or just a glossary/reference sheet for me.
 
+---
 
+## Tools/Utilities to Install
 
-React Native
+### React Native
 
-Expo
+#### Expo
 
 https://docs.expo.io/get-started/installation/
 
@@ -14,7 +16,7 @@ https://docs.expo.io/get-started/installation/
 npm install --global expo-cli
 ```
 
-React Native Plus Firebase
+### React Native Plus Firebase
 
 https://github.com/instamobile/react-native-firebase
 
@@ -25,3 +27,9 @@ expo eject
 npm install
 react-native run-android // react-native run-ios
 ```
+
+### Android Studio (Plus Android Emulator)
+
+https://docs.expo.io/workflow/android-studio-emulator/
+
+*NOTE: Requires Security & Privacy setting change which requires a system restart.
