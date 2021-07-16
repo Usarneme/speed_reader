@@ -20,7 +20,7 @@ const firebaseConfig = {
   measurementId: FIREBASE_MEASUREMENT_ID
 };
 
-console.log('FIREBASE CHECK', FIREBASE_API_KEY, KEY, KAY, KOY)
+console.log('FIREBASE CHECK', FIREBASE_API_KEY)
 
 firebase.initializeApp(firebaseConfig);
 firebase.firestore();
