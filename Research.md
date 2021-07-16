@@ -16,6 +16,12 @@ npx create-react-native-app
 
 Follow instructions to set up project directory, boilerplate files.
 
+#### Navigation React Native
+
+https://reactnavigation.org/docs/configuring-links/
+
+---
+
 #### Expo
 
 https://docs.expo.io/get-started/installation/
@@ -65,3 +71,17 @@ npm install
 react-native run-android // react-native run-ios
 ```
 
+#### Page structure, components, etc
+
+MVP
+Single page, textarea for pasting text, show one word at a time in reading area until whole text is shown
+
+Input parser
+Section break settings
+Speed settings
+Chunking
+
+Extras
+Auth, accounts, continue where you left off
+Select text from Project Gutenberg (alt source?)
+Get text from URL (blog posts, medium, etc, how to get main content?)

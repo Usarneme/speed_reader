@@ -106,3 +106,6 @@ dist
 # environmental variables
 *.env
 */.env
+
+# expo folder
+*.expo

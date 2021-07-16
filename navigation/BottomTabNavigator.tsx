@@ -10,9 +10,9 @@ import * as React from 'react';
 import Colors from '../constants/Colors';
 import { useColorScheme } from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import ReaderScreen from '../screens/ReaderScreen';
 
+import { BottomTabParamList, TabOneParamList, ReaderParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -31,8 +31,8 @@ export default function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
+        name="Reader"
+        component={ReaderNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         }}
@@ -63,16 +63,16 @@ function TabOneNavigator() {
   );
 }
 
-const TabTwoStack = createStackNavigator<TabTwoParamList>();
+const SpeedReaderStack = createStackNavigator<ReaderParamList>();
 
-function TabTwoNavigator() {
+function ReaderNavigator() {
   return (
-    <TabTwoStack.Navigator>
-      <TabTwoStack.Screen
-        name="TabTwoScreen"
-        component={TabTwoScreen}
+    <SpeedReaderStack.Navigator>
+      <SpeedReaderStack.Screen
+        name="ReaderScreen"
+        component={ReaderScreen}
         options={{ headerTitle: 'Tab Two Title' }}
       />
-    </TabTwoStack.Navigator>
+    </SpeedReaderStack.Navigator>
   );
 }

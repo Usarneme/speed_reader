@@ -16,9 +16,9 @@ export default {
               TabOneScreen: "one",
             },
           },
-          TabTwo: {
+          Reader: {
             screens: {
-              TabTwoScreen: "two",
+              ReaderScreen: "spdrdr",
             },
           },
         },
