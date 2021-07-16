@@ -8,6 +8,14 @@ Might become part of an article or just a glossary/reference sheet for me.
 
 ### React Native
 
+#### Create a react native application
+
+```sh
+npx create-react-native-app
+```
+
+Follow instructions to set up project directory, boilerplate files.
+
 #### Expo
 
 https://docs.expo.io/get-started/installation/
