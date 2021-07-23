@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {decode, encode} from 'base-64'
 
@@ -17,6 +17,14 @@ if (!global.btoa) { global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
 const Tab = createBottomTabNavigator();
+const myTheme = {
+  ...DefaultTheme,
+  backgroundColor: 'rgba(0,0,0,0.2)',
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'rgb(255,135,85)'
+  }
+}
 
 export default function App() {
 
@@ -56,7 +64,7 @@ export default function App() {
   return (
     <>
       <Header />
-      <NavigationContainer>
+      <NavigationContainer theme={myTheme}>
         <Tab.Navigator>
           { user ? (
             <>

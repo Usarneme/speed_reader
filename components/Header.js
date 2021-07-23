@@ -21,10 +21,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: '59px',
     alignItems: 'stretch',
-    background: 'rgba(255,255,255,0.15)'
+    backgroundColor: 'rgba(0,0,0,0.2)'
   },
   inner: {
-    background: 'rgba(255,255,255,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     flex: 1,
     display: 'flex',
     alignContent: 'center',

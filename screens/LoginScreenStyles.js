@@ -9,7 +9,7 @@ export default StyleSheet.create({
 
     },
     logoContainer: {
-      background: 'rgba(255,255,255,0.15)',
+      backgroundColor: 'rgba(255,255,255,0.15)',
       flex: 1,
       display: 'flex',
       alignContent: 'center',

@@ -31,7 +31,7 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={styles.button}
             onPress={onAddButtonPress}
-            disabled={text ? 'disabled' : 'false'}
+            disabled={text.length > 0 ? 'false' : 'disabled'}
           >
             <Text style={styles.buttonText}>Add Text To Speed Reader</Text>
           </TouchableOpacity>
