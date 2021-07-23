@@ -27,7 +27,7 @@ export default function HomeScreen() {
         <View style={styles.readerContainer}>
           <TextInput
             style={styles.textInput}
-            placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Use the controls to try it out or paste any text here to speed read it!'
+            placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Paste any text here to speed read it!'
             placeholderTextColor="#aaaaaa"
             onChangeText={(t) => setText(t)}
             value={text}
@@ -36,7 +36,11 @@ export default function HomeScreen() {
             multiline={true}
             numberOfLines={15}
           />
-          <TouchableOpacity style={styles.button} onPress={onAddButtonPress}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={onAddButtonPress}
+            disabled={text ? 'disabled' : 'false'}
+          >
             <Text style={styles.buttonText}>Add Text To Speed Reader</Text>
           </TouchableOpacity>
         </View>
