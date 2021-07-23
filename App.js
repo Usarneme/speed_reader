@@ -7,10 +7,11 @@ import {decode, encode} from 'base-64'
 import LoginScreen from './screens/LoginScreen'
 import HomeScreen from './screens/HomeScreen'
 import RegistrationScreen from './screens/RegistrationScreen'
+import SpeedReaderScreen from './screens/SpeedReaderScreen'
 
 import firebase from './firebase'
 
-if (!global.btoa) {  global.btoa = encode }
+if (!global.btoa) { global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
 const Stack = createStackNavigator();
@@ -54,13 +55,14 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         { user ? (
-          <Stack.Screen name="Home">
+          <Stack.Screen name="AccountHome">
             {props => <HomeScreen {...props} extraData={user} />}
           </Stack.Screen>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Registration" component={RegistrationScreen} />
+            <Stack.Screen name="Home" component={SpeedReaderScreen} />
           </>
         )}
       </Stack.Navigator>

@@ -17,12 +17,14 @@ export default function HomeScreen(props) {
       .orderBy('createdAt', 'desc')
       .onSnapshot(
         querySnapshot => {
+          console.log('FOUND ENTITIES')
           const newEntities = []
           querySnapshot.forEach(doc => {
             const entity = doc.data()
             entity.id = doc.id
             newEntities.push(entity)
           });
+          console.log(newEntities)
           setEntities(newEntities)
         },
         error => {
@@ -52,6 +54,7 @@ export default function HomeScreen(props) {
   }
 
   const renderEntity = ({item, index}) => {
+    console.log("RENDERING ENTITY", item.text)
     return (
       <View style={styles.entityContainer}>
         <Text style={styles.entityText}>

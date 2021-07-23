@@ -8,7 +8,7 @@ import {  FIREBASE_API_KEY,
           FIREBASE_STORAGE_BUCKET,
           FIREBASE_MESSAGING_SENDER_ID,
           FIREBASE_APP_ID,
-          FIREBASE_MEASUREMENT_ID, KEY, KAY, KOY } from '@env';
+          FIREBASE_MEASUREMENT_ID } from '@env';
 
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,

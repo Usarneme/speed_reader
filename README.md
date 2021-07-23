@@ -29,6 +29,10 @@ A speed reading application.
 2. Expo
 3. Babel
 4. Webpack
+5. JavaScript/JSX
+6. React Native Stylesheets
+7. Firebase + Firestore
+8. Redux
 
 ---
 
