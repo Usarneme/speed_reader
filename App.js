@@ -9,6 +9,8 @@ import LoginScreen from './screens/LoginScreen'
 import RegistrationScreen from './screens/RegistrationScreen'
 import SpeedReaderScreen from './screens/SpeedReaderScreen'
 
+import Header from './components/Header'
+
 import firebase from './firebase'
 
 if (!global.btoa) { global.btoa = encode }
@@ -52,25 +54,28 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        { user ? (
-          <>
-            <Tab.Screen name="Home">
-              {props => <SpeedReaderScreen {...props} extraData={user} />}
-            </Tab.Screen>
-            <Tab.Screen name="Account">
-              {props => <AccountScreen {...props} extraData={user} />}
-            </Tab.Screen>
-          </>
-        ) : (
-          <>
-            <Tab.Screen name="Home" component={SpeedReaderScreen} />
-            <Tab.Screen name="Login" component={LoginScreen} />
-            <Tab.Screen name="Registration" component={RegistrationScreen} />
-          </>
-        )}
-      </Tab.Navigator>
-    </NavigationContainer>
+    <>
+      <Header />
+      <NavigationContainer>
+        <Tab.Navigator>
+          { user ? (
+            <>
+              <Tab.Screen name="Home">
+                {props => <SpeedReaderScreen {...props} extraData={user} />}
+              </Tab.Screen>
+              <Tab.Screen name="Account">
+                {props => <AccountScreen {...props} extraData={user} />}
+              </Tab.Screen>
+            </>
+          ) : (
+            <>
+              <Tab.Screen name="Home" component={SpeedReaderScreen} />
+              <Tab.Screen name="Login" component={LoginScreen} />
+              <Tab.Screen name="Registration" component={RegistrationScreen} />
+            </>
+          )}
+        </Tab.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
