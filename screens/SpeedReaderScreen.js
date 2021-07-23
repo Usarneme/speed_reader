@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import styles from './HomeScreenStyles';
+import { FlatList, Image, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
   const [text, setText] = useState('')
@@ -15,11 +15,19 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.headingContainer}>
+        <View style={styles.headingChildContainer}>
+          <Text style={styles.headingText}>SpdRdr</Text>
+        </View>
+        <View style={styles.headingChildContainer}>
+          <Image style={styles.headingImage} source={require('./../assets/images/spdrdr.svg')} alt='the speed reader spud rudder logo' />
+        </View>
+      </View>
       { inputShowing &&
-        <View style={styles.formContainer}>
+        <View style={styles.readerContainer}>
           <TextInput
-            style={styles.input}
-            placeholder='Place text to speed read here...'
+            style={styles.textInput}
+            placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Use the controls to try it out or paste any text here to speed read it!'
             placeholderTextColor="#aaaaaa"
             onChangeText={(t) => setText(t)}
             value={text}
@@ -46,3 +54,62 @@ export default function HomeScreen() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+    container: {
+      display: 'flex',
+      flex: 1
+    },
+    headingContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'nowrap',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+    headingChildContainer: {
+      flex: 1,
+      minHeight: '66px'
+    },
+    headingImage: {
+      height: '142px'
+    },
+    // headingText: {
+    //   fontSize: 38,
+    //   fontWeight: 'bold'
+    // },
+    readerContainer: {
+        flex: 1,
+        alignItems: 'center',
+        flexDirection: 'row',
+        height: '100%',
+        width: '100%',
+        marginTop: 20,
+        marginBottom: 20,
+        padding: 5,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    textInput: {
+        height: 70,
+        overflow: 'scroll',
+        backgroundColor: 'white',
+        flex: 1,
+        margin: 2,
+        borderWidth: 1,
+        borderColor: '#111',
+        borderStyle: 'solid'
+    },
+    button: {
+        height: 47,
+        borderRadius: 5,
+        backgroundColor: '#788eec',
+        width: 80,
+        alignItems: "center",
+        justifyContent: 'center'
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16
+    }
+})
