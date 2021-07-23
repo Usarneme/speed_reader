@@ -15,14 +15,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headingContainer}>
-        <View style={styles.headingChildContainer}>
-          <Text style={styles.headingText}>SpdRdr</Text>
-        </View>
-        <View style={styles.headingChildContainer}>
-          <View style={styles.svgDiv} />
-        </View>
-      </View>
       { inputShowing &&
         <View style={styles.readerContainer}>
           <TextInput
@@ -63,30 +55,6 @@ const styles = StyleSheet.create({
     container: {
       display: 'flex',
       flex: 1
-    },
-    headingContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'nowrap',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    headingChildContainer: {
-      flex: 1,
-      height: '42px',
-      display: 'flex',
-      alignContent: 'center'
-    },
-    svgDiv: {
-      backgroundImage: 'url(https://raw.githubusercontent.com/Usarneme/speed_reader/main/assets/images/spdrdr.svg)',
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: 'contain',
-      padding: 0,
-      paddingBottom: '25%'
-    },
-    headingText: {
-      fontSize: 38,
-      fontWeight: 'bold'
     },
     readerContainer: {
       display: 'flex',

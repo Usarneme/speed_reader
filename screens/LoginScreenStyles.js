@@ -8,12 +8,15 @@ export default StyleSheet.create({
     title: {
 
     },
-    logo: {
-        flex: 1,
-        height: 120,
-        width: 90,
-        alignSelf: "center",
-        margin: 30
+    logoContainer: {
+      background: 'rgba(255,255,255,0.15)',
+      flex: 1,
+      display: 'flex',
+      alignContent: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: '40px',
+      marginBottom: '15px'
     },
     input: {
         height: 48,

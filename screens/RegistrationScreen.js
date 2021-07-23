@@ -4,6 +4,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import styles from './RegistrationScreenStyles';
 import firebase from './../firebase'
 
+import Logo from './../components/Logo'
+
 export default function RegistrationScreen({navigation}) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -51,10 +53,9 @@ export default function RegistrationScreen({navigation}) {
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
         keyboardShouldPersistTaps="always">
-        <Image
-          style={styles.logo}
-          source={require('./../assets/images/spdrdr.svg')}
-        />
+        <View style={styles.logoContainer}>
+          <Logo />
+        </View>
         <TextInput
           style={styles.input}
           placeholder='Full Name'
