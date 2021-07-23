@@ -1,11 +1,11 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {decode, encode} from 'base-64'
 
+import AccountScreen from './screens/AccountScreen'
 import LoginScreen from './screens/LoginScreen'
-import HomeScreen from './screens/HomeScreen'
 import RegistrationScreen from './screens/RegistrationScreen'
 import SpeedReaderScreen from './screens/SpeedReaderScreen'
 
@@ -14,7 +14,7 @@ import firebase from './firebase'
 if (!global.btoa) { global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
 
@@ -53,19 +53,24 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Tab.Navigator>
         { user ? (
-          <Stack.Screen name="AccountHome">
-            {props => <HomeScreen {...props} extraData={user} />}
-          </Stack.Screen>
+          <>
+            <Tab.Screen name="Home">
+              {props => <SpeedReaderScreen {...props} extraData={user} />}
+            </Tab.Screen>
+            <Tab.Screen name="Account">
+              {props => <AccountScreen {...props} extraData={user} />}
+            </Tab.Screen>
+          </>
         ) : (
           <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Registration" component={RegistrationScreen} />
-            <Stack.Screen name="Home" component={SpeedReaderScreen} />
+            <Tab.Screen name="Home" component={SpeedReaderScreen} />
+            <Tab.Screen name="Login" component={LoginScreen} />
+            <Tab.Screen name="Registration" component={RegistrationScreen} />
           </>
         )}
-      </Stack.Navigator>
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }
