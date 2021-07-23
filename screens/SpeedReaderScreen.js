@@ -20,7 +20,7 @@ export default function HomeScreen() {
           <Text style={styles.headingText}>SpdRdr</Text>
         </View>
         <View style={styles.headingChildContainer}>
-          <Image style={styles.headingImage} source={require('./../assets/images/spdrdr.svg')} alt='the speed reader spud rudder logo' />
+          <View style={styles.svgDiv} />
         </View>
       </View>
       { inputShowing &&
@@ -69,47 +69,55 @@ const styles = StyleSheet.create({
     },
     headingChildContainer: {
       flex: 1,
-      minHeight: '66px'
+      height: '42px',
+      display: 'flex',
+      alignContent: 'center'
     },
-    headingImage: {
-      height: '142px'
+    svgDiv: {
+      backgroundImage: 'url(https://raw.githubusercontent.com/Usarneme/speed_reader/main/assets/images/spdrdr.svg)',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'contain',
+      padding: 0,
+      paddingBottom: '25%'
     },
-    // headingText: {
-    //   fontSize: 38,
-    //   fontWeight: 'bold'
-    // },
+    headingText: {
+      fontSize: 38,
+      fontWeight: 'bold'
+    },
     readerContainer: {
-        flex: 1,
-        alignItems: 'center',
-        flexDirection: 'row',
-        height: '100%',
-        width: '100%',
-        marginTop: 20,
-        marginBottom: 20,
-        padding: 5,
-        justifyContent: 'center',
-        alignItems: 'center'
+      display: 'flex',
+      flex: 1,
+      alignItems: 'center',
+      flexDirection: 'column',
+      height: '100%',
+      width: '100%',
+      marginTop: 20,
+      marginBottom: 20,
+      padding: 5,
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     textInput: {
-        height: 70,
-        overflow: 'scroll',
-        backgroundColor: 'white',
-        flex: 1,
-        margin: 2,
-        borderWidth: 1,
-        borderColor: '#111',
-        borderStyle: 'solid'
+      height: '70vh',
+      width: '100%',
+      overflow: 'scroll',
+      backgroundColor: 'white',
+      flex: 1,
+      margin: 2,
+      borderWidth: 1,
+      borderColor: '#111',
+      borderStyle: 'solid'
     },
     button: {
-        height: 47,
-        borderRadius: 5,
-        backgroundColor: '#788eec',
-        width: 80,
-        alignItems: "center",
-        justifyContent: 'center'
+      height: 47,
+      borderRadius: 5,
+      backgroundColor: '#788eec',
+      width: '100%',
+      alignItems: "center",
+      justifyContent: 'center'
     },
     buttonText: {
-        color: 'white',
-        fontSize: 16
+      color: 'white',
+      fontSize: 16
     }
 })
