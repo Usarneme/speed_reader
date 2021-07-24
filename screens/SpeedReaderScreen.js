@@ -1,16 +1,51 @@
-import React, { useEffect, useState } from 'react'
-import { FlatList, Image, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { StyleSheet } from 'react-native';
+
+import ReaderControls from '../components/ReaderControls';
 
 export default function HomeScreen() {
   const [text, setText] = useState('')
   const [inputShowing, showInput] = useState(true)
   const [readerShowing, showReader] = useState(false)
+  const [textArray, setTextArray] = useState([])
+  const [currentWordIndex, setCurrentWordIndex] = useState(0)
+  const [speedSetting, setSpeedSetting] = useState(1000) // # of ms each word is displayed
+  let timer = null;
 
-  const onAddButtonPress = () => {
-    console.log('button pressed')
+  const enableSpeedReader = () => {
+    setTextArray(text.split(' '))
     showInput(false)
     showReader(true)
+  }
+
+  const disableSpeedReader = () => {
+    // pause in case the user doesn't pause before changing views
+    clearTimeout(timer)
+    showInput(true)
+    showReader(false)
+  }
+
+  const startSpeedReading = () => {
+    console.log('STARTING SPEED READER, pos, speed', currentWordIndex, speedSetting)
+    if (!currentWordIndex) setCurrentWordIndex(0)
+    // look at speed
+    // start timeout
+    // update rendered word after each tick
+    timer = setTimeout(() => {
+      if (currentWordIndex >= textArray.length) {
+        pauseSpeedReading()
+        // TODO show words read count, update db, etc.
+      } else {
+        setCurrentWordIndex(currentWordIndex + 1)
+      }
+    }, speedSetting)
+  }
+
+  const pauseSpeedReading = () => {
+    console.log('STOPPING SPEED READER, pos, speed', currentWordIndex, speedSetting)
+    // pause timeout
+    clearTimeout(timer)
   }
 
   return (
@@ -30,23 +65,28 @@ export default function HomeScreen() {
           />
           <TouchableOpacity
             style={styles.button}
-            onPress={onAddButtonPress}
-            disabled={text.length > 0 ? 'false' : 'disabled'}
+            onPress={enableSpeedReader}
           >
-            <Text style={styles.buttonText}>Add Text To Speed Reader</Text>
+            <Text style={styles.buttonText}>Speed Read Text</Text>
           </TouchableOpacity>
         </View>
       }
       { readerShowing &&
         <View style={styles.readerContainer}>
-          <Text>
-            { text }
+          <Text style={styles.reader}>
+            { textArray[currentWordIndex] }
           </Text>
-          <TouchableOpacity style={styles.button} onPress={() => showReader(false)}>
-            <Text style={styles.buttonText}>Hide Speed Reader</Text>
+          <TouchableOpacity style={styles.button} onPress={disableSpeedReader}>
+            <Text style={styles.buttonText}>Input Text</Text>
           </TouchableOpacity>
         </View>
       }
+      <ReaderControls
+        startSpeedReading={startSpeedReading}
+        pauseSpeedReading={pauseSpeedReading}
+        setSpeedSetting={setSpeedSetting}
+        // chunking? TODO
+      />
     </View>
   )
 }
@@ -70,7 +110,7 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     textInput: {
-      height: '70vh',
+      height: '60vh',
       width: '100%',
       overflow: 'scroll',
       backgroundColor: 'white',
@@ -79,6 +119,21 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: '#111',
       borderStyle: 'solid'
+    },
+    reader: {
+      display: 'flex',
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      alignContent: 'center',
+      alignSelf: 'center',
+      justifyContent: 'center',
+      justifyItems: 'center',
+      justifySelf: 'center',
+      fontSize: '1.8rem',
+      flex: 1,
+      backgroundColor: 'rgba(255,255,255,0.85)',
+      color: '#111'
     },
     button: {
       height: 47,

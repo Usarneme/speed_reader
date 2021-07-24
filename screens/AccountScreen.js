@@ -5,7 +5,6 @@ import firebase from '../firebase'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function HomeScreen({ navigation: { navigate } }) {
-  const userID = props.extraData.id
   const signOut = async () => {
     console.log('signout clicked')
     try {
