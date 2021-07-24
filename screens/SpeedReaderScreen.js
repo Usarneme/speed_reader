@@ -128,9 +128,7 @@ const styles = StyleSheet.create({
       alignContent: 'center',
       alignSelf: 'center',
       justifyContent: 'center',
-      justifyItems: 'center',
-      justifySelf: 'center',
-      fontSize: '1.8rem',
+      fontSize: 27,
       flex: 1,
       backgroundColor: 'rgba(255,255,255,0.85)',
       color: '#111'

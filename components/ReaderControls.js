@@ -26,10 +26,10 @@ const styles = StyleSheet.create({
     controlsHeading: {
       textAlign: 'center',
       borderColor: 'gray',
-      borderBottomWidth: '2px',
-      borderStyle: 'groove',
+      borderBottomWidth: 2,
+      borderStyle: 'dashed',
       color: '#eee',
-      fontSize: '1.4rem'
+      fontSize: 22
     },
     button: {
       height: 47,
