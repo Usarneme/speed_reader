@@ -1,8 +1,34 @@
 import React from 'react';
+import { useTheme } from '@react-navigation/native';
 import { StyleSheet, Text, View } from 'react-native';
+
 import Logo from './Logo'
 
 export default function Header() {
+  const { colors } = useTheme(); // primary, background, border, card, notification, primary, text
+  const styles = StyleSheet.create({
+    outer: {
+      display: 'flex',
+      flexDirection: 'row',
+      height: '59px',
+      alignItems: 'stretch',
+      backgroundColor: colors.background,
+      color: colors.primary,
+    },
+    inner: {
+      backgroundColor: colors.card,
+      flex: 1,
+      display: 'flex',
+      alignContent: 'center',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    text: {
+      fontSize: '2rem',
+      fontWeight: 'bold'
+    }
+  })
+
   return (
     <View style={styles.outer}>
       <View style={styles.inner}>
@@ -15,24 +41,3 @@ export default function Header() {
   )
 }
 
-const styles = StyleSheet.create({
-  outer: {
-    display: 'flex',
-    flexDirection: 'row',
-    height: '59px',
-    alignItems: 'stretch',
-    backgroundColor: 'rgba(0,0,0,0.2)'
-  },
-  inner: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    flex: 1,
-    display: 'flex',
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  text: {
-    fontSize: '2rem',
-    fontWeight: 'bold'
-  }
-})
