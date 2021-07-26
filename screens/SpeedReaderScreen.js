@@ -59,7 +59,6 @@ export default function HomeScreen() {
   }
 
   const { colors } = useTheme(); // primary, background, border, card, notification, primary, text
-  console.dir(colors)
   const styles = StyleSheet.create({
     container: {
       display: 'flex',
@@ -76,7 +75,8 @@ export default function HomeScreen() {
       color: colors.primary
     },
     readerContainer: {
-      backgroundColor: colors.card,
+      marginTop: 10,
+      // backgroundColor: colors.card,
       color: colors.text,
       display: 'flex',
       alignItems: 'center',
