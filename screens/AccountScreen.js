@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Keyboard, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import styles from './HomeScreenStyles';
+import { FlatList, Keyboard, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import firebase from '../firebase'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 

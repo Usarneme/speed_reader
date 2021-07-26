@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, Image, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { StyleSheet } from 'react-native';
+import { FlatList, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import ReaderControls from '../components/ReaderControls';
 
@@ -114,6 +113,19 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center'
     },
+    formContainer: {
+      flexDirection: 'row',
+      height: 80,
+      marginTop: 40,
+      marginBottom: 20,
+      flex: 1,
+      paddingTop: 10,
+      paddingBottom: 10,
+      paddingLeft: 30,
+      paddingRight: 30,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
     textInput: {
       height: '60vh',
       width: '100%',
@@ -142,7 +154,7 @@ const styles = StyleSheet.create({
       height: 47,
       borderRadius: 5,
       backgroundColor: '#788eec',
-      width: '100%',
+      flex: 1,
       alignItems: "center",
       justifyContent: 'center'
     },
