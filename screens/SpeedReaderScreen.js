@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import ReaderControls from '../components/ReaderControls';
 
 export default function HomeScreen() {
-  const [text, setText] = useState('')
   const [inputShowing, showInput] = useState(true)
   const [readerShowing, showReader] = useState(false)
+  const [controlsShowing, showControls] = useState(false)
+
+  const [text, setText] = useState('')
   const [textArray, setTextArray] = useState([])
+
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
   const [speedSetting, setSpeedSetting] = useState(500) // # of ms each word is displayed
   const intervalRef = useRef(null)
@@ -44,8 +48,9 @@ export default function HomeScreen() {
   }
 
   const enableSpeedReader = () => {
-    setTextArray(text.split(/[ ,'--']+/))
+    setTextArray(text.trim().split(/[ ,'--']+/))
     showInput(false)
+    showControls(true)
     showReader(true)
   }
 
@@ -53,6 +58,7 @@ export default function HomeScreen() {
     // pause in case the user doesn't pause before changing views
     clearInterval(intervalRef.current)
     showInput(true)
+    showControls(false)
     showReader(false)
   }
 
@@ -70,15 +76,15 @@ export default function HomeScreen() {
       backgroundColor: colors.background,
     },
     heading: {
-      marginTop: 9,
-      marginBottom: 9,
-      fontSize: 44,
+      margin: 11,
+      fontSize: 26,
       fontWeight: 'bold',
       textAlign: 'center',
+      flex: 1,
       color: colors.primary
     },
     readerContainer: {
-      marginTop: 10,
+      // marginTop: 10,
       // backgroundColor: colors.card,
       color: colors.text,
       display: 'flex',
@@ -116,11 +122,12 @@ export default function HomeScreen() {
       fontSize: 40
     },
     button: {
-      height: 47,
+      height: 32,
       borderRadius: 5,
       backgroundColor: '#788eec',
       alignItems: "center",
-      justifyContent: 'center'
+      justifyContent: 'center',
+      width: '80%',
     },
     buttonText: {
       color: 'white',
@@ -164,18 +171,19 @@ export default function HomeScreen() {
               minimumFontScale={0.4}
             >{ textArray[currentWordIndex] }</Text>
           </View>
-          <TouchableOpacity style={styles.button} onPress={disableSpeedReader}>
-            <Text style={styles.buttonText}>Input Text</Text>
-          </TouchableOpacity>
         </View>
       }
-      <ReaderControls
-        startSpeedReading={startSpeedReading}
-        pauseSpeedReading={pauseSpeedReading}
-        speedSetting={speedSetting}
-        setSpeedSetting={setSpeedSetting}
-        // chunking? TODO
-      />
+      { controlsShowing &&
+        <ReaderControls
+        disableSpeedReader={disableSpeedReader}
+          startSpeedReading={startSpeedReading}
+          pauseSpeedReading={pauseSpeedReading}
+          speedSetting={speedSetting}
+          setSpeedSetting={setSpeedSetting}
+          setCurrentWordIndex={setCurrentWordIndex}
+          // chunking? TODO
+        />
+      }
     </View>
   )
 }
