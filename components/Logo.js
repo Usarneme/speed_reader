@@ -7,6 +7,8 @@ function Logo() {
       flex: 1,
       maxWidth: '100%',
       maxHeight: '100%',
+      minHeight: 50,
+      minWidth: 50,
     },
     img: {
       flex: 1,
