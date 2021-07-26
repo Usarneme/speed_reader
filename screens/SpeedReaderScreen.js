@@ -11,31 +11,33 @@ export default function HomeScreen() {
   const [textArray, setTextArray] = useState([])
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
   const [speedSetting, setSpeedSetting] = useState(1000) // # of ms each word is displayed
-  const increment = useRef(null)
+  const intervalRef = useRef(null)
+  const indexRef = useRef(null)
+  indexRef.current = currentWordIndex
 
   const startSpeedReading = () => {
-    console.log('STARTING SPEED READER, pos, speed', currentWordIndex, speedSetting)
+    console.log('STARTING SPEED READER, pos, speed, indexRef', currentWordIndex, speedSetting, indexRef.current)
     if (!currentWordIndex) setCurrentWordIndex(0)
     // update rendered word after each tick at the set speed
-    increment.current = setInterval(tick, speedSetting)
+    intervalRef.current = setInterval(tick, speedSetting)
   }
 
   const tick = () => {
-    console.log("TICK", currentWordIndex)
-    console.log('increment.current', increment)
-    if (currentWordIndex >= textArray.length) {
+    console.log("TICK, indexRef", indexRef.current)
+    if (indexRef.current >= textArray.length - 1) {
+      console.log('tick, calling pause')
       pauseSpeedReading()
       // TODO show words read count, update db, etc.
     } else {
       setCurrentWordIndex(currentWordIndex => currentWordIndex + 1)
-      console.log('tick after updating index', currentWordIndex)
+      console.log('tick after updating, index', indexRef.current)
     }
   }
 
   const pauseSpeedReading = () => {
-    console.log('STOPPING SPEED READER, pos, speed', currentWordIndex, speedSetting)
+    console.log('PAUSING SPEED READER, pos, speed, ref index', currentWordIndex, speedSetting, indexRef.current)
     // pause timeout
-    clearInterval(increment.current)
+    clearInterval(intervalRef.current)
   }
 
   const enableSpeedReader = () => {
@@ -46,7 +48,7 @@ export default function HomeScreen() {
 
   const disableSpeedReader = () => {
     // pause in case the user doesn't pause before changing views
-    clearInterval(increment.current)
+    clearInterval(intervalRef.current)
     showInput(true)
     showReader(false)
   }
