@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-import Slider from 'rn-range-slider';
+// import Slider from 'rn-range-slider';
 import Thumb from './SliderComponents/Thumb';
 import Rail from './SliderComponents/Rail';
 import RailSelected from './SliderComponents/RailSelected';
@@ -27,7 +27,7 @@ export default function ReaderControls(props) {
         <Text style={styles.buttonText}>Pause</Text>
       </TouchableOpacity>
       <View >
-        <Slider
+        {/* <Slider
           value={sliderValue}
           min={10}
           max={4000}
@@ -39,7 +39,7 @@ export default function ReaderControls(props) {
           // renderRailSelected={renderRailSelected}
           // renderLabel={renderLabel}
           // renderNotch={renderNotch}
-        />
+        /> */}
         <Text>Value: {sliderValue}</Text>
       </View>
     </View>

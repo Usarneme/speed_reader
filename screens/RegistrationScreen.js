@@ -53,7 +53,7 @@ export default function RegistrationScreen({navigation}) {
         style={{ flex: 1, width: '100%' }}
         keyboardShouldPersistTaps="always">
         <View style={styles.logoContainer}>
-          <Logo />
+          <Logo style={{ borderWidth: 2, borderColor: 'red', borderStyle: 'solid', height: 90, width: '100%' }}/>
         </View>
         <TextInput
           style={styles.input}
@@ -122,7 +122,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       marginTop: 40,
-      marginBottom: 15
+      marginBottom: 15,
+      borderWidth: 2, borderColor: 'red', borderStyle: 'solid', height: 90, width: '100%'
     },
     input: {
         height: 48,
