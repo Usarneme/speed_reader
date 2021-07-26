@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 import ReaderControls from '../components/ReaderControls';
@@ -172,6 +172,7 @@ export default function HomeScreen() {
       <ReaderControls
         startSpeedReading={startSpeedReading}
         pauseSpeedReading={pauseSpeedReading}
+        speedSetting={speedSetting}
         setSpeedSetting={setSpeedSetting}
         // chunking? TODO
       />
