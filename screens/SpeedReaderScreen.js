@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, Image, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 
@@ -11,7 +11,32 @@ export default function HomeScreen() {
   const [textArray, setTextArray] = useState([])
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
   const [speedSetting, setSpeedSetting] = useState(1000) // # of ms each word is displayed
-  let timer = null;
+  const increment = useRef(null)
+
+  const startSpeedReading = () => {
+    console.log('STARTING SPEED READER, pos, speed', currentWordIndex, speedSetting)
+    if (!currentWordIndex) setCurrentWordIndex(0)
+    // update rendered word after each tick at the set speed
+    increment.current = setInterval(tick, speedSetting)
+  }
+
+  const tick = () => {
+    console.log("TICK", currentWordIndex)
+    console.log('increment.current', increment)
+    if (currentWordIndex >= textArray.length) {
+      pauseSpeedReading()
+      // TODO show words read count, update db, etc.
+    } else {
+      setCurrentWordIndex(currentWordIndex => currentWordIndex + 1)
+      console.log('tick after updating index', currentWordIndex)
+    }
+  }
+
+  const pauseSpeedReading = () => {
+    console.log('STOPPING SPEED READER, pos, speed', currentWordIndex, speedSetting)
+    // pause timeout
+    clearInterval(increment.current)
+  }
 
   const enableSpeedReader = () => {
     setTextArray(text.split(' '))
@@ -21,31 +46,9 @@ export default function HomeScreen() {
 
   const disableSpeedReader = () => {
     // pause in case the user doesn't pause before changing views
-    clearTimeout(timer)
+    clearInterval(increment.current)
     showInput(true)
     showReader(false)
-  }
-
-  const startSpeedReading = () => {
-    console.log('STARTING SPEED READER, pos, speed', currentWordIndex, speedSetting)
-    if (!currentWordIndex) setCurrentWordIndex(0)
-    // look at speed
-    // start timeout
-    // update rendered word after each tick
-    timer = setTimeout(() => {
-      if (currentWordIndex >= textArray.length) {
-        pauseSpeedReading()
-        // TODO show words read count, update db, etc.
-      } else {
-        setCurrentWordIndex(currentWordIndex + 1)
-      }
-    }, speedSetting)
-  }
-
-  const pauseSpeedReading = () => {
-    console.log('STOPPING SPEED READER, pos, speed', currentWordIndex, speedSetting)
-    // pause timeout
-    clearTimeout(timer)
   }
 
   return (
