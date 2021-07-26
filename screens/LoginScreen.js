@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import firebase from '../firebase'
-
-import Logo from './../components/Logo'
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('')
@@ -44,11 +42,9 @@ export default function LoginScreen({navigation}) {
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
-        style={{ flex: 1, width: '100%' }}
+        style={styles.container}
         keyboardShouldPersistTaps="always">
-        <View style={styles.logoContainer}>
-          <Logo />
-        </View>
+        <Text style={styles.heading}>Log In</Text>
         <TextInput
           style={styles.input}
           placeholder='E-mail'
@@ -83,60 +79,54 @@ export default function LoginScreen({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'center'
-    },
-    title: {
-
-    },
-    logoContainer: {
-      backgroundColor: 'rgba(255,255,255,0.75)',
       flex: 1,
-      display: 'flex',
-      alignContent: 'center',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginTop: 40,
-      marginBottom: 15
+      width: '100%'
+    },
+    heading: {
+      marginTop: 9,
+      marginBottom: 9,
+      fontSize: 44,
+      fontWeight: 'bold',
+      textAlign: 'center'
     },
     input: {
-        height: 48,
-        borderRadius: 5,
-        overflow: 'hidden',
-        backgroundColor: 'white',
-        marginTop: 10,
-        marginBottom: 10,
-        marginLeft: 30,
-        marginRight: 30,
-        paddingLeft: 16
+      height: 48,
+      borderRadius: 5,
+      overflow: 'hidden',
+      backgroundColor: 'white',
+      marginTop: 10,
+      marginBottom: 10,
+      marginLeft: 30,
+      marginRight: 30,
+      paddingLeft: 16
     },
     button: {
-        backgroundColor: '#788eec',
-        marginLeft: 30,
-        marginRight: 30,
-        marginTop: 20,
-        height: 48,
-        borderRadius: 5,
-        alignItems: "center",
-        justifyContent: 'center'
+      backgroundColor: '#788eec',
+      marginLeft: 30,
+      marginRight: 30,
+      marginTop: 20,
+      height: 48,
+      borderRadius: 5,
+      alignItems: "center",
+      justifyContent: 'center'
     },
     buttonTitle: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: "bold"
+      color: 'white',
+      fontSize: 16,
+      fontWeight: "bold"
     },
     footerView: {
-        flex: 1,
-        alignItems: "center",
-        marginTop: 20
+      flex: 1,
+      alignItems: "center",
+      marginTop: 20
     },
     footerText: {
-        fontSize: 16,
-        color: '#2e2e2d'
+      fontSize: 16,
+      color: '#2e2e2d'
     },
     footerLink: {
-        color: "#788eec",
-        fontWeight: "bold",
-        fontSize: 16
+      color: "#788eec",
+      fontWeight: "bold",
+      fontSize: 16
     }
 })

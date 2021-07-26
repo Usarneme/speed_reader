@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FlatList, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 import ReaderControls from '../components/ReaderControls';
 
@@ -57,10 +58,76 @@ export default function HomeScreen() {
     setCurrentWordIndex(0)
   }
 
+  const { colors } = useTheme(); // primary, background, border, card, notification, primary, text
+  console.dir(colors)
+  const styles = StyleSheet.create({
+    container: {
+      display: 'flex',
+      flex: 1,
+      minHeight: '100%',
+      backgroundColor: colors.background,
+    },
+    heading: {
+      marginTop: 9,
+      marginBottom: 9,
+      fontSize: 44,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      color: colors.primary
+    },
+    readerContainer: {
+      backgroundColor: colors.card,
+      color: colors.text,
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'column',
+      width: '100%',
+      height: '50%',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    textInput: {
+      height: '50%',
+      width: '100%',
+      overflow: 'scroll',
+      backgroundColor: 'white',
+      margin: 5,
+      padding: 5,
+      borderWidth: 1,
+      borderColor: '#111',
+      borderStyle: 'solid'
+    },
+    reader: {
+      display: 'flex',
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      alignContent: 'center',
+      alignSelf: 'center',
+      justifyContent: 'center',
+      fontSize: 27,
+      flex: 1,
+      backgroundColor: 'rgba(255,255,255,0.85)',
+      color: '#111'
+    },
+    button: {
+      height: 47,
+      borderRadius: 5,
+      backgroundColor: '#788eec',
+      alignItems: "center",
+      justifyContent: 'center'
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 16
+    }
+  })
+
   return (
     <View style={styles.container}>
       { inputShowing &&
         <View style={styles.readerContainer}>
+          <Text style={styles.heading}>Enter Text To Speed Read</Text>
           <TextInput
             style={styles.textInput}
             placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Paste any text here to speed read it!'
@@ -99,72 +166,3 @@ export default function HomeScreen() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-    container: {
-      display: 'flex',
-      flex: 1
-    },
-    readerContainer: {
-      display: 'flex',
-      flex: 1,
-      alignItems: 'center',
-      flexDirection: 'column',
-      height: '100%',
-      width: '100%',
-      marginTop: 20,
-      marginBottom: 20,
-      padding: 5,
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    formContainer: {
-      flexDirection: 'row',
-      height: 80,
-      marginTop: 40,
-      marginBottom: 20,
-      flex: 1,
-      paddingTop: 10,
-      paddingBottom: 10,
-      paddingLeft: 30,
-      paddingRight: 30,
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    textInput: {
-      height: '60%',
-      width: '100%',
-      overflow: 'scroll',
-      backgroundColor: 'white',
-      flex: 1,
-      margin: 2,
-      borderWidth: 1,
-      borderColor: '#111',
-      borderStyle: 'solid'
-    },
-    reader: {
-      display: 'flex',
-      width: '100%',
-      height: '100%',
-      alignItems: 'center',
-      alignContent: 'center',
-      alignSelf: 'center',
-      justifyContent: 'center',
-      fontSize: 27,
-      flex: 1,
-      backgroundColor: 'rgba(255,255,255,0.85)',
-      color: '#111'
-    },
-    button: {
-      height: 47,
-      borderRadius: 5,
-      backgroundColor: '#788eec',
-      flex: 1,
-      alignItems: "center",
-      justifyContent: 'center'
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 16
-    }
-})
