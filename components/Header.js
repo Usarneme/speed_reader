@@ -10,7 +10,7 @@ export default function Header() {
     outer: {
       display: 'flex',
       flexDirection: 'row',
-      height: '59px',
+      height: 59,
       alignItems: 'stretch',
       backgroundColor: colors.background,
       color: colors.primary,
@@ -24,7 +24,7 @@ export default function Header() {
       justifyContent: 'center'
     },
     text: {
-      fontSize: '2rem',
+      fontSize: 35,
       fontWeight: 'bold'
     }
   })
@@ -40,4 +40,3 @@ export default function Header() {
     </View>
   )
 }
-

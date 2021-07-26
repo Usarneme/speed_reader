@@ -9,7 +9,7 @@ export default function HomeScreen() {
   const [readerShowing, showReader] = useState(false)
   const [textArray, setTextArray] = useState([])
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
-  const [speedSetting, setSpeedSetting] = useState(1000) // # of ms each word is displayed
+  const [speedSetting, setSpeedSetting] = useState(500) // # of ms each word is displayed
   const intervalRef = useRef(null)
   const indexRef = useRef(null)
   indexRef.current = currentWordIndex
@@ -52,6 +52,11 @@ export default function HomeScreen() {
     showReader(false)
   }
 
+  const changeText = text => {
+    setText(text)
+    setCurrentWordIndex(0)
+  }
+
   return (
     <View style={styles.container}>
       { inputShowing &&
@@ -60,7 +65,7 @@ export default function HomeScreen() {
             style={styles.textInput}
             placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Paste any text here to speed read it!'
             placeholderTextColor="#aaaaaa"
-            onChangeText={(t) => setText(t)}
+            onChangeText={(t) => changeText(t)}
             value={text}
             underlineColorAndroid="transparent"
             autoCapitalize="none"
@@ -127,7 +132,7 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     textInput: {
-      height: '60vh',
+      height: '60%',
       width: '100%',
       overflow: 'scroll',
       backgroundColor: 'white',
