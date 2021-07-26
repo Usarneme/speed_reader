@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
@@ -15,6 +15,11 @@ export default function HomeScreen() {
   const indexRef = useRef(null)
   indexRef.current = currentWordIndex
 
+  // clear the interval when conditionally rendered components change
+  useEffect(() => {
+    clearInterval(indexRef.current)
+  }, [])
+
   const startSpeedReading = () => {
     console.log('STARTING SPEED READER, pos, speed, indexRef', currentWordIndex, speedSetting, indexRef.current)
     if (!currentWordIndex) setCurrentWordIndex(0)
@@ -30,18 +35,16 @@ export default function HomeScreen() {
       // TODO show words read count, update db, etc.
     } else {
       setCurrentWordIndex(currentWordIndex => currentWordIndex + 1)
-      console.log('tick after updating, index', indexRef.current)
     }
   }
 
   const pauseSpeedReading = () => {
     console.log('PAUSING SPEED READER, pos, speed, ref index', currentWordIndex, speedSetting, indexRef.current)
-    // pause timeout
     clearInterval(intervalRef.current)
   }
 
   const enableSpeedReader = () => {
-    setTextArray(text.split(' '))
+    setTextArray(text.split(/[ ,'--']+/))
     showInput(false)
     showReader(true)
   }
@@ -82,12 +85,12 @@ export default function HomeScreen() {
       alignItems: 'center',
       flexDirection: 'column',
       width: '100%',
-      height: '50%',
+      height: '60%',
       justifyContent: 'center',
       alignItems: 'center'
     },
     textInput: {
-      height: '50%',
+      height: '60%',
       width: '100%',
       overflow: 'scroll',
       backgroundColor: 'white',
@@ -97,18 +100,20 @@ export default function HomeScreen() {
       borderColor: '#111',
       borderStyle: 'solid'
     },
-    reader: {
-      display: 'flex',
+    readerView: {
       width: '100%',
-      height: '100%',
       alignItems: 'center',
       alignContent: 'center',
       alignSelf: 'center',
       justifyContent: 'center',
       fontSize: 27,
       flex: 1,
+      margin: 2,
       backgroundColor: 'rgba(255,255,255,0.85)',
-      color: '#111'
+      color: colors.text,
+    },
+    readerText: {
+      fontSize: 40
     },
     button: {
       height: 47,
@@ -139,19 +144,26 @@ export default function HomeScreen() {
             multiline={true}
             numberOfLines={15}
           />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={enableSpeedReader}
-          >
+          <TouchableOpacity style={styles.button} onPress={enableSpeedReader} >
             <Text style={styles.buttonText}>Speed Read Text</Text>
           </TouchableOpacity>
         </View>
       }
       { readerShowing &&
         <View style={styles.readerContainer}>
-          <Text style={styles.reader}>
-            { textArray[currentWordIndex] }
-          </Text>
+          <View
+            style={styles.readerView}
+            onLayout={(e => {
+              const { width } = e.nativeEvent.layout
+              console.log('on layout, found width', width)
+            })}
+            >
+            <Text
+              style={styles.readerText}
+              adjustsFontSizeToFit={true}
+              minimumFontScale={0.4}
+            >{ textArray[currentWordIndex] }</Text>
+          </View>
           <TouchableOpacity style={styles.button} onPress={disableSpeedReader}>
             <Text style={styles.buttonText}>Input Text</Text>
           </TouchableOpacity>
