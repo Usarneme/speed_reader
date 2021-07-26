@@ -1,7 +1,22 @@
-import React from 'react'
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+
+import Slider from 'rn-range-slider';
+import Thumb from './SliderComponents/Thumb';
+import Rail from './SliderComponents/Rail';
+import RailSelected from './SliderComponents/RailSelected';
+import Notch from './SliderComponents/Notch';
+import Label from './SliderComponents/Label';
 
 export default function ReaderControls(props) {
+  const [sliderValue, setSliderValue] = useState(400)
+
+  // const renderThumb = useCallback(() => <Thumb />, []);
+  // const renderRail = useCallback(() => <Rail />, []);
+  // const renderRailSelected = useCallback(() => <RailSelected />, []);
+  // const renderNotch = useCallback(() => <Notch />, []);
+  // const renderLabel = useCallback(() => <Label />, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.controlsHeading}>Controls</Text>
@@ -11,9 +26,22 @@ export default function ReaderControls(props) {
       <TouchableOpacity style={styles.button} onPress={props.pauseSpeedReading} >
         <Text style={styles.buttonText}>Pause</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={props.setSpeedSetting} >
-        <Text style={styles.buttonText}>Change Speed TODO</Text>
-      </TouchableOpacity>
+      <View >
+        <Slider
+          value={sliderValue}
+          min={10}
+          max={4000}
+          step={10}
+          disableRange={true}
+          onValueChange={value => setSliderValue({ value })}
+          // renderThumb={renderThumb}
+          // renderRail={renderRail}
+          // renderRailSelected={renderRailSelected}
+          // renderLabel={renderLabel}
+          // renderNotch={renderNotch}
+        />
+        <Text>Value: {sliderValue}</Text>
+      </View>
     </View>
   )
 }
