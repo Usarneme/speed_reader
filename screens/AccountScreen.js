@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Keyboard, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import firebase from '../firebase'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { myDarkTheme, myLightTheme } from './../styles/Theme';
 
 export default function HomeScreen({ navigation: { navigate } }) {
+  const scheme = useColorScheme();
+  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+  console.log(theme)
+
   const signOut = async () => {
     console.log('signout clicked')
     try {
@@ -15,12 +20,12 @@ export default function HomeScreen({ navigation: { navigate } }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={theme}>
       <KeyboardAwareScrollView>
         <TouchableOpacity
-          style={styles.button}
+          style={theme.button}
           onPress={signOut}>
-          <Text style={styles.buttonTitle}>Sign out</Text>
+          <Text style={theme.button}>Sign out</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
     </View>

@@ -1,19 +1,19 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { decode, encode } from 'base-64';
 
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'react-native';
+import { myDarkTheme, myLightTheme } from './styles/Theme';
 
 import AccountScreen from './screens/AccountScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import SpeedReaderScreen from './screens/SpeedReaderScreen';
-
 import Header from './components/Header';
-import { myDarkTheme, myLightTheme } from './styles/Theme';
+
 import firebase from './firebase';
 
 if (!global.btoa) { global.btoa = encode }
@@ -64,10 +64,18 @@ export default function App() {
         <Tab.Navigator>
           { user ? (
             <>
-              <Tab.Screen name="Home">
+              <Tab.Screen
+                name="Home"
+                options={{
+                  tabBarIcon: ({ color, size }) => ( <Ionicons name="home" size={size} color={color} /> )}}
+              >
                 {props => <SpeedReaderScreen {...props} extraData={user} />}
               </Tab.Screen>
-              <Tab.Screen name="Account">
+              <Tab.Screen
+                name="Account"
+                options={{
+                  tabBarIcon: ({ color, size }) => ( <MaterialCommunityIcons name="account" size={size} color={color} /> )}}
+              >
                 {props => <AccountScreen {...props} extraData={user} />}
               </Tab.Screen>
             </>
