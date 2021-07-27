@@ -158,7 +158,7 @@ export default function HomeScreen() {
             multiline={true}
             numberOfLines={15}
           />
-          <TouchableOpacity style={styles.button} onPress={enableSpeedReader} >
+          <TouchableOpacity style={styles.button} onPress={enableSpeedReader} disabled={text ? false : true}>
             <Text style={styles.buttonText}>Speed Read Text</Text>
           </TouchableOpacity>
           <FileSelect changeText={changeText} />

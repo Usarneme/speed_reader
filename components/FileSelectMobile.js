@@ -13,8 +13,20 @@ export default function FileSelectMobile(props) {
       console.log('no file chosen')
     } else {
       console.log('picked file:', chosenFile)
-      console.log(Object.keys(chosenFile))
       setFile(chosenFile.uri)
+      readFileContent(chosenFile.uri)
+    }
+  }
+
+  const readFileContent = async uri => {
+    if (!file) return
+    console.log('reading file from ',uri)
+    try {
+      const res = await FileSystem.readAsStringAsync(uri)
+      console.log('finished reading file',res)
+      props.addTextFromFile(res)
+    } catch (err) {
+      console.log("ERROR reading file", err)
     }
   }
 
@@ -36,6 +48,7 @@ export default function FileSelectMobile(props) {
       <TouchableOpacity onPress={getLocalFile} >
         <Text>Click here to select a text file to speed read</Text>
       </TouchableOpacity>
+      <Text>{file}</Text>
     </View>
   )
 }

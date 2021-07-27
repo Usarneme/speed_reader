@@ -1,24 +1,10 @@
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import * as FileSystem from 'expo-file-system';
 
 import FileSelectMobile from './FileSelectMobile';
 import FileSelectWeb from './FileSelectWeb';
 
 export default function FileUploads(props) {
-  const ensureDirExists = async dir => {
-    return await FileSystem.getInfoAsync(dir).exists
-  }
-
-  const getFile = async () => {
-    try {
-      const dirExists = await ensureDirExists()
-      if (!dirExists) throw new Error("No directory of that name found")
-    } catch (err) {
-      console.log('ERROR', err)
-    }
-  }
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -44,7 +30,7 @@ export default function FileUploads(props) {
       { Platform.OS === 'ios' || Platform.OS === 'android' ?
         <View>
           <Text>MOBILE</Text>
-          <FileSelectMobile style={styles.children} />
+          <FileSelectMobile style={styles.children} addTextFromFile={props.changeText} />
         </View>
         :
         <View>
