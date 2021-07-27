@@ -4,6 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import ReaderControls from '../components/ReaderControls';
+import FileSelect from '../components/FileSelect';
 
 export default function HomeScreen() {
   const [inputShowing, showInput] = useState(true);
@@ -160,6 +161,7 @@ export default function HomeScreen() {
           <TouchableOpacity style={styles.button} onPress={enableSpeedReader} >
             <Text style={styles.buttonText}>Speed Read Text</Text>
           </TouchableOpacity>
+          <FileSelect />
         </View>
       }
       { readerShowing &&
