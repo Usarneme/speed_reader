@@ -33,11 +33,11 @@ export default function FileSelectWeb(props) {
 
   const styles = StyleSheet.create({
     container: {
-      maxWidth: '100%',
-      borderColor: 'red',
-      borderStyle: 'solid',
-      borderWidth: 2
-    }
+      // display: 'flex',
+      // flex: 1,
+      // minHeight: '100%',
+      // backgroundColor: colors.background,
+    },
   })
 
   return (

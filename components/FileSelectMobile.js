@@ -32,21 +32,33 @@ export default function FileSelectMobile(props) {
 
   const styles = StyleSheet.create({
     container: {
-      maxWidth: '100%',
-      borderColor: 'red',
-      borderStyle: 'solid',
-      borderWidth: 2
+      // display: 'flex',
+      // flex: 1,
+      // minHeight: '100%',
+      // backgroundColor: colors.background,
     },
     heading: {
       fontSize: 22,
       fontWeight: 'bold'
+    },
+    button: {
+      height: 32,
+      borderRadius: 5,
+      backgroundColor: '#788eec',
+      width: '100%',
+      alignItems: "center",
+      justifyContent: 'center',
+      marginBottom: 2
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 16
     }
   })
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Mobile file selector</Text>
-      <TouchableOpacity onPress={getLocalFile} >
-        <Text>Click here to select a text file to speed read</Text>
+      <TouchableOpacity onPress={getLocalFile} style={styles.button} >
+        <Text style={styles.buttonText}>Select a text file to speed read</Text>
       </TouchableOpacity>
       <Text>{file}</Text>
     </View>

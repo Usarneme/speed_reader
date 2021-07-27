@@ -7,8 +7,10 @@ import FileSelectWeb from './FileSelectWeb';
 export default function FileUploads(props) {
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      display: 'flex'
+      // display: 'flex',
+      // flex: 1,
+      // minHeight: '100%',
+      // backgroundColor: colors.background,
     },
     heading: {
       color: '#cdc',
@@ -28,15 +30,9 @@ export default function FileUploads(props) {
     <View style={styles.container}>
       <Text style={styles.heading}>Upload File To Parse Into Speed Reader</Text>
       { Platform.OS === 'ios' || Platform.OS === 'android' ?
-        <View>
-          <Text>MOBILE</Text>
-          <FileSelectMobile style={styles.children} addTextFromFile={props.changeText} />
-        </View>
+        <FileSelectMobile style={styles.children} addTextFromFile={props.changeText} />
         :
-        <View>
-          <Text>WEB</Text>
-          <FileSelectWeb style={styles.children} addTextFromFile={props.changeText} />
-        </View>
+        <FileSelectWeb style={styles.children} addTextFromFile={props.changeText} />
       }
     </View>
   )
