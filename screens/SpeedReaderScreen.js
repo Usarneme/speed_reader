@@ -6,18 +6,19 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import ReaderControls from '../components/ReaderControls';
 
 export default function HomeScreen() {
-  const [inputShowing, showInput] = useState(true)
-  const [readerShowing, showReader] = useState(false)
-  const [controlsShowing, showControls] = useState(false)
+  const [inputShowing, showInput] = useState(true);
+  const [readerShowing, showReader] = useState(false);
+  const [controlsShowing, showControls] = useState(false);
+  const [isPlaying, setPlaying] = useState(false);
 
-  const [text, setText] = useState('')
-  const [textArray, setTextArray] = useState([])
+  const [text, setText] = useState('');
+  const [textArray, setTextArray] = useState([]);
 
-  const [currentWordIndex, setCurrentWordIndex] = useState(0)
-  const [speedSetting, setSpeedSetting] = useState(500) // # of ms each word is displayed
-  const intervalRef = useRef(null)
-  const indexRef = useRef(null)
-  indexRef.current = currentWordIndex
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [speedSetting, setSpeedSetting] = useState(500); // # of ms each word is displayed
+  const intervalRef = useRef(null);
+  const indexRef = useRef(null);
+  indexRef.current = currentWordIndex;
 
   // clear the interval when conditionally rendered components change
   useEffect(() => {
@@ -26,45 +27,50 @@ export default function HomeScreen() {
 
   const startSpeedReading = () => {
     console.log('STARTING SPEED READER, pos, speed, indexRef', currentWordIndex, speedSetting, indexRef.current)
-    if (!currentWordIndex) setCurrentWordIndex(0)
+    if (!currentWordIndex) setCurrentWordIndex(0);
     // update rendered word after each tick at the set speed
-    intervalRef.current = setInterval(tick, speedSetting)
+    intervalRef.current = setInterval(tick, speedSetting);
   }
 
   const tick = () => {
     console.log("TICK, indexRef", indexRef.current)
     if (indexRef.current >= textArray.length - 1) {
-      console.log('tick, calling pause')
-      pauseSpeedReading()
+      console.log('tick, calling pause');
+      pauseSpeedReading();
       // TODO show words read count, update db, etc.
     } else {
-      setCurrentWordIndex(currentWordIndex => currentWordIndex + 1)
+      setCurrentWordIndex(currentWordIndex => currentWordIndex + 1);
     }
   }
 
   const pauseSpeedReading = () => {
-    console.log('PAUSING SPEED READER, pos, speed, ref index', currentWordIndex, speedSetting, indexRef.current)
-    clearInterval(intervalRef.current)
+    if (!isPlaying) return;
+    console.log('PAUSING SPEED READER, pos, speed, ref index', currentWordIndex, speedSetting, indexRef.current);
+    setPlaying(false);
+    clearInterval(intervalRef.current);
   }
 
   const enableSpeedReader = () => {
-    setTextArray(text.trim().split(/[ ,'--']+/))
-    showInput(false)
-    showControls(true)
-    showReader(true)
+    if (isPlaying) return;
+    setTextArray(text.trim().split(/[ ,'--']+/));
+    setPlaying(true);
+    showInput(false);
+    showControls(true);
+    showReader(true);
   }
 
   const disableSpeedReader = () => {
     // pause in case the user doesn't pause before changing views
-    clearInterval(intervalRef.current)
-    showInput(true)
-    showControls(false)
-    showReader(false)
+    clearInterval(intervalRef.current);
+    setPlaying(false);
+    showInput(true);
+    showControls(false);
+    showReader(false);
   }
 
   const changeText = text => {
-    setText(text)
-    setCurrentWordIndex(0)
+    setText(text);
+    setCurrentWordIndex(0);
   }
 
   const { colors } = useTheme(); // primary, background, border, card, notification, primary, text
