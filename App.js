@@ -1,9 +1,11 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { useColorScheme, View } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { decode, encode } from 'base-64';
+
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import AccountScreen from './screens/AccountScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -71,9 +73,24 @@ export default function App() {
             </>
           ) : (
             <>
-              <Tab.Screen name="Home" component={SpeedReaderScreen} />
-              <Tab.Screen name="Login" component={LoginScreen} />
-              <Tab.Screen name="Registration" component={RegistrationScreen} />
+              <Tab.Screen
+                name="Home"
+                component={SpeedReaderScreen}
+                options={{
+                  tabBarIcon: ({ color, size }) => ( <Ionicons name="home" size={size} color={color} /> )}}
+              />
+              <Tab.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{
+                  tabBarIcon: ({ color, size }) => ( <MaterialCommunityIcons name="login" size={size} color={color} /> )}}
+              />
+              <Tab.Screen
+                name="Registration"
+                component={RegistrationScreen}
+                options={{
+                  tabBarIcon: ({ color, size }) => ( <MaterialCommunityIcons name="account" size={size} color={color} /> )}}
+              />
             </>
           )}
         </Tab.Navigator>

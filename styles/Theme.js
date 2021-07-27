@@ -11,7 +11,6 @@ const common = {
     marginTop: 8,
     padding: 10,
     textTransform: 'uppercase',
-    color: '#333444',
     fontSize: 20,
   },
   heading: {
@@ -43,10 +42,10 @@ const common = {
 export const myLightTheme = {
   ...DefaultTheme,
   ...common,
-  backgroundColor: 'rgb(12,12,12)',
+  backgroundColor: 'rgb(220,220,220)',
   colors: {
     ...DefaultTheme.colors,
-    background: 'rgb(100,100,100)',
+    background: 'rgb(220,220,220)',
     primary: 'rgb(240,120,120)',
     text: 'rgb(150,200,255)',
     card: 'rgb(50,50,50)',
@@ -60,11 +59,12 @@ export const myDarkTheme = {
   backgroundColor: '#2e3440',
   colors: {
     ...DarkTheme.colors,
-    background: '#2e3440',
-    border: 'rgb(39, 39, 41)',
-    card: 'rgb(18, 18, 18)',
-    notification: 'rgb(255, 69, 58)',
-    primary: 'rgb(10, 132, 255)',
-    text: '#d8dee9',
+    background: '#2e3440',    // lowest layer background
+    border: '#111',
+    card: '#434c5e',          // higher layer background
+    notification: '#4c566a',  // highest layer background
+    primary: '#d8dee9',       // headings text color, should be light to contrast with dark backgrounds
+    buttonColor: '#333444',   // button color, not as light to contrast with lighter dark button backgrounds
+    text: '#e5e9f0',          // lightest text color
   }
 }
