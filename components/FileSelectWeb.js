@@ -15,8 +15,8 @@ export default function FileSelectWeb(props) {
         // console.log('got data array', dataArr)
         // const parsedJson = JSON.stringify(dataArr, null, ' ')
         // console.log('got parsed json', parsedJson)
-        const texted = String.fromCharCode.apply(null, new Uint16Array(fileData))
-        console.log('got text', texted)
+        // const texted = String.fromCharCode.apply(null, new Uint16Array(fileData))
+        // console.log('got text', texted)
       } else {
         console.log("PARSED TEXT FILE")
         props.addTextFromFile(fileData)
