@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 
 import FileSelectMobile from './FileSelectMobile';
@@ -41,15 +41,15 @@ export default function FileUploads(props) {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Upload File To Parse Into Speed Reader</Text>
-      { window && window.FileReader ?
-        <View>
-          <Text>WEB</Text>
-          <FileSelectWeb style={styles.children} />
-        </View>
-        :
+      { Platform.OS === 'ios' || Platform.OS === 'android' ?
         <View>
           <Text>MOBILE</Text>
           <FileSelectMobile style={styles.children} />
+        </View>
+        :
+        <View>
+          <Text>WEB</Text>
+          <FileSelectWeb style={styles.children} />
         </View>
       }
     </View>
