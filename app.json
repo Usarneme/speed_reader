@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/Miami_potato.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#eee"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

@@ -22,19 +22,35 @@ export default function FileUploads(props) {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
+      display: 'flex'
     },
     heading: {
       color: '#cdc',
-      fontSize: 33,
+      fontSize: 23,
       fontWeight: 'bold'
+    },
+    children: {
+      // display: 'flex',
+      // flex: 1,
+      backgroundColor: 'rgb(255,255,255)',
+      color: 'rgb(20,20,20)',
+      width: '100%',
+      height: '100%'
     }
   })
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Upload File To Parse Into Speed Reader</Text>
-      { !window || !window.FileReader ?
-      <FileSelectMobile /> :
-      <FileSelectWeb />
+      { window && window.FileReader ?
+        <View>
+          <Text>WEB</Text>
+          <FileSelectWeb style={styles.children} />
+        </View>
+        :
+        <View>
+          <Text>MOBILE</Text>
+          <FileSelectMobile style={styles.children} />
+        </View>
       }
     </View>
   )

@@ -162,6 +162,7 @@ export default function HomeScreen() {
             <Text style={styles.buttonText}>Speed Read Text</Text>
           </TouchableOpacity>
           <FileSelect />
+          <Text>TEST</Text>
         </View>
       }
       { readerShowing &&
