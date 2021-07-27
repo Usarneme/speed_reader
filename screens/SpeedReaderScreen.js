@@ -161,8 +161,7 @@ export default function HomeScreen() {
           <TouchableOpacity style={styles.button} onPress={enableSpeedReader} >
             <Text style={styles.buttonText}>Speed Read Text</Text>
           </TouchableOpacity>
-          <FileSelect />
-          <Text>TEST</Text>
+          <FileSelect changeText={changeText} />
         </View>
       }
       { readerShowing &&

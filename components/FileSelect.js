@@ -49,7 +49,7 @@ export default function FileUploads(props) {
         :
         <View>
           <Text>WEB</Text>
-          <FileSelectWeb style={styles.children} />
+          <FileSelectWeb style={styles.children} addTextFromFile={props.changeText} />
         </View>
       }
     </View>

@@ -5,8 +5,10 @@ import * as FileSystem from 'expo-file-system'
 export default function FileSelectMobile(props) {
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      maxWidth: '100%'
+      maxWidth: '100%',
+      borderColor: 'red',
+      borderStyle: 'solid',
+      borderWidth: 2
     },
     heading: {
       fontSize: 22,
