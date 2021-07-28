@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 import { myDarkTheme, myLightTheme } from './../styles/Theme';
 
 import ReaderControls from '../components/ReaderControls';
@@ -95,12 +95,8 @@ export default function HomeScreen() {
     inputContainer: {
       height: '100%',
     },
-    readerContainer: {
-      height: '50%',
-      backgroundColor: theme.colors.card,
-      color: theme.colors.text,
-    },
     textInput: {
+      height: '50%',
       overflow: 'scroll',
       backgroundColor: '#ddd',
       padding: 5,
@@ -108,20 +104,18 @@ export default function HomeScreen() {
       borderColor: '#fff',
       borderStyle: 'solid'
     },
-    readerView: {
-      // width: '100%',
-      // alignItems: 'center',
-      // alignContent: 'center',
-      // alignSelf: 'center',
-      // justifyContent: 'center',
-      // fontSize: 27,
-      // flex: 1,
-      // margin: 2,
-      // backgroundColor: 'rgba(255,255,255,0.85)',
-      // color: theme.colors.text,
+    readerContainer: {
+      height: '50%',
+      backgroundColor: theme.colors.card,
+      color: theme.colors.text,
+      display: 'flex',
+      alignContent: 'center',
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     readerText: {
-      fontSize: 40
+      fontSize: 40,
+      color: theme.color
     },
     divider: {
       width: '100%',
@@ -147,7 +141,7 @@ export default function HomeScreen() {
             multiline={true}
             numberOfLines={15}
           />
-          { text &&
+          { text.length > 0 &&
             <TouchableOpacity
               style={theme.button}
               onPress={clearText}>
@@ -166,19 +160,11 @@ export default function HomeScreen() {
       }
       { readerShowing &&
         <View style={styles.readerContainer}>
-          <View
-            style={styles.readerView}
-            onLayout={(e => {
-              const { width } = e.nativeEvent.layout
-              console.log('on layout, found width', width)
-            })}
-            >
-            <Text
-              style={styles.readerText}
-              adjustsFontSizeToFit={true}
-              minimumFontScale={0.4}
-            >{ textArray[currentWordIndex] }</Text>
-          </View>
+          <Text
+            style={styles.readerText}
+            adjustsFontSizeToFit={true}
+            minimumFontScale={0.4}
+          >{ textArray[currentWordIndex] }</Text>
         </View>
       }
       { controlsShowing &&
