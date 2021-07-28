@@ -50,10 +50,10 @@ export default function LoginScreen({navigation}) {
     },
     footerText: {
       fontSize: 16,
-      // color: '#2e2e2d'
+      color: theme.color,
     },
     footerLink: {
-      color: "#788eec",
+      color: theme.button.backgroundColor,
       fontWeight: "bold",
       fontSize: 16
     }

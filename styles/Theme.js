@@ -1,11 +1,13 @@
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 
+const buttonBackgroundColor = '#788eec';
+
 const common = {
   fontFamily: 'Roboto',
   fontFamily: 'Menlo',
   fontSize: 22,
   button: {
-    backgroundColor: '#788eec',
+    backgroundColor: buttonBackgroundColor,
     marginLeft: 30,
     marginRight: 30,
     marginTop: 20,
@@ -21,6 +23,7 @@ const common = {
     fontWeight: "bold"
   },
   heading: {
+    marginTop: 11,
     fontWeight: 'bold',
     fontSize: 32,
     textAlign: 'center',
@@ -55,35 +58,40 @@ const common = {
 const lightColors = {
   ...DefaultTheme.colors,
   background: 'rgb(220,220,220)',
+  border: 'rgb(240,120,120)',
+  buttonColor: '#333444',
+  card: 'rgb(50,50,50)',
   primary: 'rgb(240,120,120)',
   text: 'rgb(150,200,255)',
-  card: 'rgb(50,50,50)',
-  border: 'rgb(240,120,120)'
+}
+
+export const myLightTheme = {
+  ...DefaultTheme,
+  ...common,
+  colors: lightColors,
+  backgroundColor: lightColors.background,
+  color: lightColors.text,
 }
 
 const darkColors = {
   ...DarkTheme.colors,
   background: '#2e3440',    // lowest layer background
   border: '#111',
+  buttonColor: '#333444',   // button color, not as light to contrast with lighter dark button backgrounds
   card: '#434c5e',          // higher layer background
   notification: '#4c566a',  // highest layer background
   primary: '#d8dee9',       // headings text color, should be light to contrast with dark backgrounds
-  buttonColor: '#333444',   // button color, not as light to contrast with lighter dark button backgrounds
-  text: '#e5e9f0',          // lightest text color
-}
-
-export const myLightTheme = {
-  ...DefaultTheme,
-  ...common,
-  lightColors,
-  backgroundColor: lightColors.background,
-  color: lightColors.primary,
+  text: '#eee',             // lightest text color
 }
 
 export const myDarkTheme = {
   ...DarkTheme,
   ...common,
-  darkColors,
+  heading: {
+    ...common.heading,
+    color: darkColors.primary,
+  },
+  colors: darkColors,
   backgroundColor: darkColors.background,
-  color: darkColors.primary,
+  color: darkColors.text,
 }
