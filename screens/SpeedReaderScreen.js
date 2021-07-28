@@ -101,7 +101,7 @@ export default function HomeScreen() {
       backgroundColor: '#ddd',
       padding: 5,
       borderWidth: 2,
-      borderColor: '#fff',
+      borderColor: theme.colors.border,
       borderStyle: 'solid'
     },
     readerContainer: {
@@ -111,7 +111,10 @@ export default function HomeScreen() {
       display: 'flex',
       alignContent: 'center',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      borderWidth: 2,
+      borderColor: theme.colors.border,
+      borderStyle: 'solid'
     },
     readerText: {
       fontSize: 40,

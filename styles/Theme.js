@@ -75,12 +75,13 @@ const common = {
 
 const lightColors = {
   ...DefaultTheme.colors,
-  background: 'rgb(220,220,220)',
-  border: 'rgb(240,120,120)',
+  background: '#eee',
+  border: '#888',
   buttonColor: '#333444',
-  card: 'rgb(50,50,50)',
-  primary: 'rgb(240,120,120)',
-  text: 'rgb(150,200,255)',
+  card: '#f7f7f7',
+  primary: '#333',
+  text: '#666',
+  input: '#fff'
 }
 
 export const myLightTheme = {
@@ -101,6 +102,10 @@ export const myLightTheme = {
   iconSize: 28,
   activeTintColor: lightColors.primary,
   inactiveTintColor: lightColors.text,
+  input: {
+    ...common.input,
+    backgroundColor: lightColors.input
+  }
 }
 
 const darkColors = {
@@ -112,6 +117,7 @@ const darkColors = {
   notification: '#4c566a',  // highest layer background
   primary: '#d7ddd8',       // headings text color, should be light to contrast with dark backgrounds
   text: '#fafffb',          // lightest text color
+  input: '#ddd',
 }
 
 export const myDarkTheme = {
@@ -132,4 +138,8 @@ export const myDarkTheme = {
   iconSize: 28,
   activeTintColor: darkColors.primary,
   inactiveTintColor: darkColors.text,
+  input: {
+    ...common.input,
+    backgroundColor: darkColors.input
+  }
 }
