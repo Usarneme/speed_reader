@@ -7,7 +7,6 @@ import { myDarkTheme, myLightTheme } from './../styles/Theme';
 export default function HomeScreen({ navigation: { navigate } }) {
   const scheme = useColorScheme();
   const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
-  console.log(theme)
 
   const signOut = async () => {
     console.log('signout clicked')

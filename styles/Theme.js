@@ -5,13 +5,20 @@ const common = {
   fontFamily: 'Menlo',
   fontSize: 22,
   button: {
-    width: '100%',
-    borderRadius: 0,
-    margin: 5,
-    marginTop: 8,
-    padding: 10,
+    backgroundColor: '#788eec',
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 20,
+    height: 48,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
     textTransform: 'uppercase',
-    fontSize: 20,
+  },
+  buttonTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: "bold"
   },
   heading: {
     fontWeight: 'bold',
@@ -22,9 +29,15 @@ const common = {
     borderStyle: 'solid',
   },
   input: {
-    minHeight: 28,
-    backgroundColor: '#333344',
-    fontSize: 24,
+    height: 48,
+    borderRadius: 5,
+    overflow: 'hidden',
+    backgroundColor: '#eee',
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 30,
+    marginRight: 30,
+    paddingLeft: 16
   },
   container: {
     margin: 5,
@@ -39,32 +52,38 @@ const common = {
   }
 }
 
+const lightColors = {
+  ...DefaultTheme.colors,
+  background: 'rgb(220,220,220)',
+  primary: 'rgb(240,120,120)',
+  text: 'rgb(150,200,255)',
+  card: 'rgb(50,50,50)',
+  border: 'rgb(240,120,120)'
+}
+
+const darkColors = {
+  ...DarkTheme.colors,
+  background: '#2e3440',    // lowest layer background
+  border: '#111',
+  card: '#434c5e',          // higher layer background
+  notification: '#4c566a',  // highest layer background
+  primary: '#d8dee9',       // headings text color, should be light to contrast with dark backgrounds
+  buttonColor: '#333444',   // button color, not as light to contrast with lighter dark button backgrounds
+  text: '#e5e9f0',          // lightest text color
+}
+
 export const myLightTheme = {
   ...DefaultTheme,
   ...common,
-  backgroundColor: 'rgb(220,220,220)',
-  colors: {
-    ...DefaultTheme.colors,
-    background: 'rgb(220,220,220)',
-    primary: 'rgb(240,120,120)',
-    text: 'rgb(150,200,255)',
-    card: 'rgb(50,50,50)',
-    border: 'rgb(240,120,120)'
-  }
+  lightColors,
+  backgroundColor: lightColors.background,
+  color: lightColors.primary,
 }
 
 export const myDarkTheme = {
   ...DarkTheme,
   ...common,
-  backgroundColor: '#2e3440',
-  colors: {
-    ...DarkTheme.colors,
-    background: '#2e3440',    // lowest layer background
-    border: '#111',
-    card: '#434c5e',          // higher layer background
-    notification: '#4c566a',  // highest layer background
-    primary: '#d8dee9',       // headings text color, should be light to contrast with dark backgrounds
-    buttonColor: '#333444',   // button color, not as light to contrast with lighter dark button backgrounds
-    text: '#e5e9f0',          // lightest text color
-  }
+  darkColors,
+  backgroundColor: darkColors.background,
+  color: darkColors.primary,
 }
