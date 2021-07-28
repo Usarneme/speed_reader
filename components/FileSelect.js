@@ -28,7 +28,6 @@ export default function FileUploads(props) {
   })
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Upload File To Parse Into Speed Reader</Text>
       { Platform.OS === 'ios' || Platform.OS === 'android' ?
         <FileSelectMobile style={styles.children} addTextFromFile={props.changeText} />
         :

@@ -77,29 +77,22 @@ export default function HomeScreen() {
   }
 
   const styles = StyleSheet.create({
-    readerContainer: {
-      // marginTop: 10,
-      // backgroundColor: theme.colors.card,
-      color: theme.colors.text,
-      // display: 'flex',
-      // alignItems: 'center',
-      // flexDirection: 'column',
-      // width: '100%',
-      // height: '60%',
-      // justifyContent: 'center',
-      // alignItems: 'center'
+    inputContainer: {
+      height: '100%',
     },
-    // textInput: {
-    //   height: '60%',
-    //   width: '100%',
-    //   overflow: 'scroll',
-    //   backgroundColor: 'white',
-    //   margin: 5,
-    //   padding: 5,
-    //   borderWidth: 1,
-    //   borderColor: '#111',
-    //   borderStyle: 'solid'
-    // },
+    readerContainer: {
+      height: '50%',
+      backgroundColor: theme.colors.card,
+      color: theme.colors.text,
+    },
+    textInput: {
+      overflow: 'scroll',
+      backgroundColor: '#ddd',
+      padding: 5,
+      borderWidth: 2,
+      borderColor: '#fff',
+      borderStyle: 'solid'
+    },
     readerView: {
       // width: '100%',
       // alignItems: 'center',
@@ -115,17 +108,23 @@ export default function HomeScreen() {
     readerText: {
       fontSize: 40
     },
+    divider: {
+      width: '100%',
+      textAlign: 'center',
+      color: theme.color,
+      padding: 4,
+    }
   })
 
   return (
     <View style={theme.container}>
       { inputShowing &&
-        <View style={styles.readerContainer}>
+        <View style={styles.inputContainer}>
           <Text style={theme.heading}>Enter Text</Text>
           <TextInput
-            style={theme.input}
+            style={styles.textInput}
             placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Paste any text here to speed read it!'
-            placeholderTextColor="#aaaaaa"
+            placeholderTextColor="#777"
             onChangeText={(t) => changeText(t)}
             value={text}
             underlineColorAndroid="transparent"
@@ -134,8 +133,9 @@ export default function HomeScreen() {
             numberOfLines={15}
           />
           <TouchableOpacity style={theme.button} onPress={enableSpeedReader} disabled={text ? false : true}>
-            <Text style={theme.buttonText}>Speed Read Text</Text>
+            <Text style={theme.buttonTitle}>Speed Read Input Text</Text>
           </TouchableOpacity>
+          <Text style={styles.divider}>or</Text>
           <FileSelect changeText={changeText} />
         </View>
       }

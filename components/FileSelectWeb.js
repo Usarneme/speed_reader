@@ -1,7 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, useColorScheme, View } from 'react-native';
+import { myDarkTheme, myLightTheme } from './../styles/Theme';
 
 export default function FileSelectWeb(props) {
+  const scheme = useColorScheme();
+  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+
   const handleFile = event => {
     const file = event.target.files[0]
     console.log(file)
@@ -31,19 +35,34 @@ export default function FileSelectWeb(props) {
     }
   }
 
-  const styles = StyleSheet.create({
-    container: {
-      // display: 'flex',
-      // flex: 1,
-      // minHeight: '100%',
-      // backgroundColor: colors.background,
+  const styles = {
+    inputContainer: {
+      height: '100%',
     },
-  })
+    input: {
+      opacity: 0,
+      position: 'absolute',
+      zIndex: -1,
+      display: 'none'
+    },
+    label: {
+      cursor: 'pointer',
+      display: 'flex',
+      alignContent: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+      justifyItems: 'center',
+      textAlign: 'center',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+      marginTop: 0,
+      padding: 0,
+    }
+  }
 
   return (
-    <View style={styles.container}>
-      <Text>File Select Web</Text>
-      <input type='file' onChange={e => handleFile(e)} />
-    </View>
+    <>
+      <label for='file' style={{...theme.button, ...theme.buttonTitle, ...styles.label}}>Select Text File</label>
+      <input type='file' style={{...styles.input}} name='file' id='file' onChange={e => handleFile(e)} />
+    </>
   )
 }

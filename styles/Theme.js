@@ -1,10 +1,9 @@
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
+// const SpaceMono = require('./../assets/fonts/SpaceMono-Regular.ttf')
 
 const buttonBackgroundColor = '#788eec';
 
 const common = {
-  fontFamily: 'Roboto',
-  fontFamily: 'Menlo',
   fontSize: 22,
   button: {
     backgroundColor: buttonBackgroundColor,
@@ -15,15 +14,17 @@ const common = {
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    textTransform: 'uppercase',
+    cursor: 'pointer',
   },
   buttonTitle: {
+    textTransform: 'uppercase',
     color: 'white',
     fontSize: 16,
     fontWeight: "bold"
   },
   heading: {
-    marginTop: 11,
+    marginTop: 9,
+    marginBottom: 6,
     fontWeight: 'bold',
     fontSize: 32,
     textAlign: 'center',
@@ -44,7 +45,9 @@ const common = {
   },
   container: {
     margin: 5,
+    marginTop: 0,
     padding: 5,
+    height: '100%',
   },
   tabMenu: {
     backgroundColor: '#434c5e',
