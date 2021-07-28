@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { useColorScheme, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useColorScheme, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { myDarkTheme, myLightTheme } from './../styles/Theme';
 import firebase from '../firebase'
 
@@ -42,54 +43,40 @@ export default function LoginScreen({navigation}) {
       })
   }
 
-  const styles = StyleSheet.create({
-    footerView: {
-      flex: 1,
-      alignItems: "center",
-      marginTop: 20
-    },
-    footerText: {
-      fontSize: 16,
-      color: theme.color,
-    },
-    footerLink: {
-      color: theme.button.backgroundColor,
-      fontWeight: "bold",
-      fontSize: 16
-    }
-  })
-
-  console.log(theme)
   return (
     <View style={theme}>
-      <Text style={theme.heading}>Log In</Text>
-      <TextInput
-        style={theme.input}
-        placeholder='E-mail'
-        placeholderTextColor="#aaaaaa"
-        onChangeText={t => setEmail(t)}
-        value={email}
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={theme.input}
-        placeholderTextColor="#aaaaaa"
-        secureTextEntry
-        placeholder='Password'
-        onChangeText={t => setPassword(t)}
-        value={password}
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
-      />
-      <TouchableOpacity
-        style={theme.button}
-        onPress={() => onLoginPress()}>
-        <Text style={theme.buttonTitle}>Log in</Text>
-      </TouchableOpacity>
-      <View style={styles.footerView}>
-        <Text style={styles.footerText}>Don't have an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Sign up</Text></Text>
-      </View>
+      <KeyboardAwareScrollView
+        style={theme.container}
+        keyboardShouldPersistTaps="always">
+        <Text style={theme.heading}>Log In</Text>
+        <TextInput
+          style={theme.input}
+          placeholder='E-mail'
+          placeholderTextColor="#aaaaaa"
+          onChangeText={t => setEmail(t)}
+          value={email}
+          underlineColorAndroid="transparent"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={theme.input}
+          placeholderTextColor="#aaaaaa"
+          secureTextEntry
+          placeholder='Password'
+          onChangeText={t => setPassword(t)}
+          value={password}
+          underlineColorAndroid="transparent"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity
+          style={theme.button}
+          onPress={() => onLoginPress()}>
+          <Text style={theme.buttonTitle}>Log in</Text>
+        </TouchableOpacity>
+        <View style={theme.footerView}>
+          <Text style={theme.footerText}>Don't have an account? <Text onPress={onFooterLinkPress} style={theme.footerLink}>Sign up</Text></Text>
+        </View>
+      </KeyboardAwareScrollView>
     </View>
   )
 }

@@ -52,6 +52,19 @@ const common = {
     padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  footerView: {
+    flex: 1,
+    alignItems: "center",
+    marginTop: 20
+  },
+  footerText: {
+    fontSize: 16,
+  },
+  footerLink: {
+    color: buttonBackgroundColor,
+    fontWeight: "bold",
+    fontSize: 16
   }
 }
 
@@ -68,10 +81,17 @@ const lightColors = {
 export const myLightTheme = {
   ...DefaultTheme,
   ...common,
+  heading: {
+    ...common.heading,
+    color: lightColors.primary,
+  },
   colors: lightColors,
   backgroundColor: lightColors.background,
   color: lightColors.text,
-}
+  footerText: {
+    ...common.footerText,
+    color: lightColors.primary
+  }}
 
 const darkColors = {
   ...DarkTheme.colors,
@@ -94,4 +114,8 @@ export const myDarkTheme = {
   colors: darkColors,
   backgroundColor: darkColors.background,
   color: darkColors.text,
+  footerText: {
+    ...common.footerText,
+    color: darkColors.primary
+  }
 }

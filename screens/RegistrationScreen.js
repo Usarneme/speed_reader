@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react';
+import { useColorScheme, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTheme } from '@react-navigation/native';
-import firebase from './../firebase'
+import { myDarkTheme, myLightTheme } from './../styles/Theme';
+import firebase from '../firebase';
 
 export default function RegistrationScreen({navigation}) {
+  const scheme = useColorScheme();
+  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -46,71 +49,14 @@ export default function RegistrationScreen({navigation}) {
     });
   }
 
-  const { colors } = useTheme(); // primary, background, border, card, notification, primary, text
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      width: '100%',
-      backgroundColor: colors.background
-    },
-    heading: {
-      marginTop: 9,
-      marginBottom: 9,
-      fontSize: 44,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      color: colors.primary,
-    },
-    input: {
-      height: 48,
-      borderRadius: 5,
-      overflow: 'hidden',
-      backgroundColor: 'white',
-      marginTop: 10,
-      marginBottom: 10,
-      marginLeft: 30,
-      marginRight: 30,
-      paddingLeft: 16
-    },
-    button: {
-      backgroundColor: '#788eec',
-      marginLeft: 30,
-      marginRight: 30,
-      marginTop: 20,
-      height: 48,
-      borderRadius: 5,
-      alignItems: "center",
-      justifyContent: 'center'
-    },
-    buttonTitle: {
-      color: 'white',
-      fontSize: 16,
-      fontWeight: "bold"
-    },
-    footerView: {
-      flex: 1,
-      alignItems: "center",
-      marginTop: 20
-    },
-    footerText: {
-      fontSize: 16,
-      color: '#2e2e2d'
-    },
-    footerLink: {
-      color: "#788eec",
-      fontWeight: "bold",
-      fontSize: 16
-    }
-  })
-
   return (
-    <View style={styles.container}>
+    <View style={theme}>
       <KeyboardAwareScrollView
-        style={styles.container}
+        style={theme.container}
         keyboardShouldPersistTaps="always">
-        <Text style={styles.heading}>Account Setup</Text>
+        <Text style={theme.heading}>Account Setup</Text>
         <TextInput
-          style={styles.input}
+          style={theme.input}
           placeholder='Full Name'
           placeholderTextColor="#aaaaaa"
           onChangeText={(text) => setFullName(text)}
@@ -119,7 +65,7 @@ export default function RegistrationScreen({navigation}) {
           autoCapitalize="none"
         />
         <TextInput
-          style={styles.input}
+          style={theme.input}
           placeholder='E-mail'
           placeholderTextColor="#aaaaaa"
           onChangeText={(text) => setEmail(text)}
@@ -128,7 +74,7 @@ export default function RegistrationScreen({navigation}) {
           autoCapitalize="none"
         />
         <TextInput
-          style={styles.input}
+          style={theme.input}
           placeholderTextColor="#aaaaaa"
           secureTextEntry
           placeholder='Password'
@@ -138,7 +84,7 @@ export default function RegistrationScreen({navigation}) {
           autoCapitalize="none"
         />
         <TextInput
-          style={styles.input}
+          style={theme.input}
           placeholderTextColor="#aaaaaa"
           secureTextEntry
           placeholder='Confirm Password'
@@ -148,12 +94,12 @@ export default function RegistrationScreen({navigation}) {
           autoCapitalize="none"
         />
         <TouchableOpacity
-          style={styles.button}
+          style={theme.button}
           onPress={() => onRegisterPress()}>
-          <Text style={styles.buttonTitle}>Create account</Text>
+          <Text style={theme.buttonTitle}>Create account</Text>
         </TouchableOpacity>
-        <View style={styles.footerView}>
-          <Text style={styles.footerText}>Already have an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
+        <View style={theme.footerView}>
+          <Text style={theme.footerText}>Already have an account? <Text onPress={onFooterLinkPress} style={theme.footerLink}>Log in</Text></Text>
         </View>
       </KeyboardAwareScrollView>
     </View>
