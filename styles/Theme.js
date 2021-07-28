@@ -27,9 +27,9 @@ const common = {
     fontWeight: 'bold',
     fontSize: 32,
     textAlign: 'center',
-    borderBottomColor: '#111',
-    borderBottomWidth: 4,
-    borderStyle: 'solid',
+    // borderBottomColor: '#111',
+    // borderBottomWidth: 4,
+    // borderStyle: 'solid',
   },
   input: {
     height: 48,

@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { myDarkTheme, myLightTheme } from './../styles/Theme';
 
 import ReaderControls from '../components/ReaderControls';
 import FileSelect from '../components/FileSelect';
 
 export default function HomeScreen() {
+  const scheme = useColorScheme();
+  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+
   const [inputShowing, showInput] = useState(true);
   const [readerShowing, showReader] = useState(false);
   const [controlsShowing, showControls] = useState(false);
@@ -73,81 +76,54 @@ export default function HomeScreen() {
     setCurrentWordIndex(0);
   }
 
-  const { colors } = useTheme(); // primary, background, border, card, notification, primary, text
   const styles = StyleSheet.create({
-    container: {
-      display: 'flex',
-      flex: 1,
-      minHeight: '100%',
-      backgroundColor: colors.background,
-    },
-    heading: {
-      margin: 11,
-      fontSize: 26,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      flex: 1,
-      color: colors.primary
-    },
     readerContainer: {
       // marginTop: 10,
-      // backgroundColor: colors.card,
-      color: colors.text,
-      display: 'flex',
-      alignItems: 'center',
-      flexDirection: 'column',
-      width: '100%',
-      height: '60%',
-      justifyContent: 'center',
-      alignItems: 'center'
+      // backgroundColor: theme.colors.card,
+      color: theme.colors.text,
+      // display: 'flex',
+      // alignItems: 'center',
+      // flexDirection: 'column',
+      // width: '100%',
+      // height: '60%',
+      // justifyContent: 'center',
+      // alignItems: 'center'
     },
-    textInput: {
-      height: '60%',
-      width: '100%',
-      overflow: 'scroll',
-      backgroundColor: 'white',
-      margin: 5,
-      padding: 5,
-      borderWidth: 1,
-      borderColor: '#111',
-      borderStyle: 'solid'
-    },
+    // textInput: {
+    //   height: '60%',
+    //   width: '100%',
+    //   overflow: 'scroll',
+    //   backgroundColor: 'white',
+    //   margin: 5,
+    //   padding: 5,
+    //   borderWidth: 1,
+    //   borderColor: '#111',
+    //   borderStyle: 'solid'
+    // },
     readerView: {
-      width: '100%',
-      alignItems: 'center',
-      alignContent: 'center',
-      alignSelf: 'center',
-      justifyContent: 'center',
-      fontSize: 27,
-      flex: 1,
-      margin: 2,
-      backgroundColor: 'rgba(255,255,255,0.85)',
-      color: colors.text,
+      // width: '100%',
+      // alignItems: 'center',
+      // alignContent: 'center',
+      // alignSelf: 'center',
+      // justifyContent: 'center',
+      // fontSize: 27,
+      // flex: 1,
+      // margin: 2,
+      // backgroundColor: 'rgba(255,255,255,0.85)',
+      // color: theme.colors.text,
     },
     readerText: {
       fontSize: 40
     },
-    button: {
-      height: 32,
-      borderRadius: 5,
-      backgroundColor: '#788eec',
-      alignItems: "center",
-      justifyContent: 'center',
-      width: '80%',
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 16
-    }
   })
 
   return (
-    <View style={styles.container}>
+    <View style={theme.container}>
       { inputShowing &&
         <View style={styles.readerContainer}>
-          <Text style={styles.heading}>Enter Text To Speed Read</Text>
+          <Text style={theme.heading}>Enter Text</Text>
           <TextInput
-            style={styles.textInput}
+            style={theme.input}
             placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Paste any text here to speed read it!'
             placeholderTextColor="#aaaaaa"
             onChangeText={(t) => changeText(t)}
@@ -157,8 +133,8 @@ export default function HomeScreen() {
             multiline={true}
             numberOfLines={15}
           />
-          <TouchableOpacity style={styles.button} onPress={enableSpeedReader} disabled={text ? false : true}>
-            <Text style={styles.buttonText}>Speed Read Text</Text>
+          <TouchableOpacity style={theme.button} onPress={enableSpeedReader} disabled={text ? false : true}>
+            <Text style={theme.buttonText}>Speed Read Text</Text>
           </TouchableOpacity>
           <FileSelect changeText={changeText} />
         </View>

@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Logo from './Logo'
 
 export default function Header() {
-  const { colors } = useTheme(); // primary, background, border, card, notification, primary, text
+  const { colors } = useTheme();
   const styles = StyleSheet.create({
     outer: {
       display: 'flex',
@@ -19,7 +19,6 @@ export default function Header() {
       backgroundColor: colors.card,
       flex: 1,
       display: 'flex',
-      alignContent: 'center',
       alignItems: 'center',
       justifyContent: 'center'
     },
