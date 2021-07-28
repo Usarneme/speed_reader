@@ -142,11 +142,13 @@ export default function HomeScreen() {
             numberOfLines={15}
           />
           { text.length > 1 &&
-            <TouchableOpacity
-              style={theme.button}
-              onPress={clearText}>
-              <Text style={theme.buttonTitle}>Clear Text</Text>
-            </TouchableOpacity>
+            <View style={{ marginBottom: 18, }}>
+              <TouchableOpacity
+                style={theme.button}
+                onPress={clearText}>
+                <Text style={theme.buttonTitle}>Clear Text</Text>
+              </TouchableOpacity>
+            </View>
           }
           <TouchableOpacity
             style={theme.button}

@@ -21,6 +21,10 @@ export default function ReaderControls(props) {
     splitButton: {
       ...theme.button,
       flex: 1,
+    },
+    sliderContainer: {
+      margin: 23,
+      // backgroundColor: theme.backgroundColor,
     }
   })
 
@@ -41,15 +45,15 @@ export default function ReaderControls(props) {
       <TouchableOpacity style={theme.button} onPress={props.disableSpeedReader}>
         <Text style={theme.buttonTitle}>Change Text</Text>
       </TouchableOpacity>
-      <View >
+      <View style={styles.sliderContainer}>
         <Slider
           value={props.speedSetting}
-          minimumValue={10}
-          maximumValue={2000}
-          step={10}
+          minimumValue={20}
+          maximumValue={600}
+          step={4}
           onValueChange={v => props.setSpeedSetting(v)}
         />
-        <Text>Value: {props.speedSetting}</Text>
+        <Text style={styles.controlsHeading}>{ ((1000 / props.speedSetting) * 60).toFixed(0) } Words Per Minute</Text>
       </View>
     </View>
   )

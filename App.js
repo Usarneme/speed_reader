@@ -72,13 +72,13 @@ export default function App() {
             <>
               <Tab.Screen
                 name="Home"
-                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.iconColor} /> }}
+                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
               >
                 {props => <SpeedReaderScreen {...props} extraData={user} />}
               </Tab.Screen>
               <Tab.Screen
                 name="Account"
-                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.iconColor} /> }}
+                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
               >
                 {props => <AccountScreen {...props} extraData={user} />}
               </Tab.Screen>
@@ -88,17 +88,17 @@ export default function App() {
               <Tab.Screen
                 name="Home"
                 component={SpeedReaderScreen}
-                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.iconColor} /> }}
+                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
               />
               <Tab.Screen
                 name="Login"
                 component={LoginScreen}
-                options={{ tabBarIcon: () => <MaterialCommunityIcons name="login" size={theme.iconSize} color={theme.iconColor} /> }}
+                options={{ tabBarIcon: () => <MaterialCommunityIcons name="login" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
               />
               <Tab.Screen
                 name="Registration"
                 component={RegistrationScreen}
-                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.iconColor} /> }}
+                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
               />
             </>
           )}

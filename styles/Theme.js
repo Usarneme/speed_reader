@@ -1,7 +1,9 @@
+import { Platform } from 'react-native';
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 // const SpaceMono = require('./../assets/fonts/SpaceMono-Regular.ttf')
 
 const buttonBackgroundColor = '#788eec';
+const cursorOnWeb = Platform.OS === 'ios' || Platform.OS === 'android' ? null : { cursor: 'pointer', }
 
 const common = {
   fontSize: 22,
@@ -14,7 +16,7 @@ const common = {
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
+    ...cursorOnWeb,
   },
   buttonTitle: {
     textTransform: 'uppercase',
@@ -97,6 +99,7 @@ export const myLightTheme = {
   },
   iconColor: lightColors.text,
   iconSize: 28,
+  activeTintColor: lightColors.primary,
   inactiveTintColor: lightColors.text,
 }
 
@@ -107,8 +110,8 @@ const darkColors = {
   buttonColor: '#333444',   // button color, not as light to contrast with lighter dark button backgrounds
   card: '#434c5e',          // higher layer background
   notification: '#4c566a',  // highest layer background
-  primary: '#d8dee9',       // headings text color, should be light to contrast with dark backgrounds
-  text: '#eee',             // lightest text color
+  primary: '#d7ddd8',       // headings text color, should be light to contrast with dark backgrounds
+  text: '#fafffb',          // lightest text color
 }
 
 export const myDarkTheme = {
@@ -127,5 +130,6 @@ export const myDarkTheme = {
   },
   iconColor: darkColors.text,
   iconSize: 28,
+  activeTintColor: darkColors.primary,
   inactiveTintColor: darkColors.text,
 }
