@@ -8,9 +8,9 @@ export default function FileUploads(props) {
   return (
     <>
       { Platform.OS === 'ios' || Platform.OS === 'android' ?
-        <FileSelectMobile addTextFromFile={props.changeText} />
+        <FileSelectMobile addTextFromFile={props.addTextFromFile} />
         :
-        <FileSelectWeb addTextFromFile={props.changeText} />
+        <FileSelectWeb addTextFromFile={props.addTextFromFile} />
       }
     </>
   )

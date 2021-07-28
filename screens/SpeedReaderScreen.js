@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 import { myDarkTheme, myLightTheme } from './../styles/Theme';
 
 import ReaderControls from '../components/ReaderControls';
@@ -55,7 +55,6 @@ export default function HomeScreen() {
 
   const enableSpeedReader = () => {
     if (isPlaying) return;
-    setTextArray(text.trim().split(/[ ,'--']+/));
     setPlaying(true);
     showInput(false);
     showControls(true);
@@ -74,6 +73,22 @@ export default function HomeScreen() {
   const changeText = text => {
     setText(text);
     setCurrentWordIndex(0);
+  }
+
+  const speedReadInputText = () => {
+    setTextArray(text.trim().split(/[ ,'--']+/));
+    enableSpeedReader()
+  }
+
+  const speedReadTextFromFile = text => {
+    changeText(text)
+    setTextArray(text.trim().split(/[ ,'--']+/));
+    enableSpeedReader()
+  }
+
+  const clearText = () => {
+    setText('')
+    setTextArray([])
   }
 
   const styles = StyleSheet.create({
@@ -132,11 +147,21 @@ export default function HomeScreen() {
             multiline={true}
             numberOfLines={15}
           />
-          <TouchableOpacity style={theme.button} onPress={enableSpeedReader} disabled={text ? false : true}>
+          { text &&
+            <TouchableOpacity
+              style={theme.button}
+              onPress={clearText}>
+              <Text style={theme.buttonTitle}>Clear Text</Text>
+            </TouchableOpacity>
+          }
+          <TouchableOpacity
+            style={theme.button}
+            onPress={speedReadInputText}
+            disabled={text ? false : true}>
             <Text style={theme.buttonTitle}>Speed Read Input Text</Text>
           </TouchableOpacity>
           <Text style={styles.divider}>or</Text>
-          <FileSelect changeText={changeText} />
+          <FileSelect addTextFromFile={speedReadTextFromFile} />
         </View>
       }
       { readerShowing &&
