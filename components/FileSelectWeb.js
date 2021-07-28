@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { myDarkTheme, myLightTheme } from './../styles/Theme';
 
 export default function FileSelectWeb(props) {

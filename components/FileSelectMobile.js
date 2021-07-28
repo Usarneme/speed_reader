@@ -1,66 +1,49 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, useColorScheme } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 
+import { myDarkTheme, myLightTheme } from './../styles/Theme';
+
 export default function FileSelectMobile(props) {
-  const [file, setFile] = useState('');
+  const scheme = useColorScheme();
+  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
 
   const getLocalFile = async () => {
     console.log('get local file clicked')
-    const chosenFile = await DocumentPicker.getDocumentAsync()
-    if (!chosenFile || chosenFile.type !== 'success') {
-      console.log('no file chosen')
-    } else {
-      console.log('picked file:', chosenFile)
-      setFile(chosenFile.uri)
-      readFileContent(chosenFile.uri)
+    try {
+      const chosenFile = await DocumentPicker.getDocumentAsync()
+      if (!chosenFile || chosenFile.type !== 'success') {
+        console.log('no file chosen')
+      } else {
+        console.log('picked file:', chosenFile)
+        console.log('file uri starts with file/ ?', chosenFile.uri.substring(0,5))
+        if (chosenFile.uri.substring(0,4) !== 'file') {
+          await readFileContent('file:' + chosenFile.uri)
+        } else {
+          await readFileContent(chosenFile.uri)
+        }
+      }
+    } catch (err) {
+      console.log("ERROR GETTING FILE", err)
     }
   }
 
-  const readFileContent = async uri => {
+  const readFileContent = async (file) => {
+    console.log('reading file from ',file)
     if (!file) return
-    console.log('reading file from ',uri)
     try {
-      const res = await FileSystem.readAsStringAsync(uri)
-      console.log('finished reading file',res)
+      const res = await FileSystem.readAsStringAsync(file)
+      console.log(`finished reading file\n\n CONTENT: ${res}\n\n`)
       props.addTextFromFile(res)
     } catch (err) {
       console.log("ERROR reading file", err)
     }
   }
 
-  const styles = StyleSheet.create({
-    container: {
-      // display: 'flex',
-      // flex: 1,
-      // minHeight: '100%',
-      // backgroundColor: colors.background,
-    },
-    heading: {
-      fontSize: 22,
-      fontWeight: 'bold'
-    },
-    button: {
-      height: 32,
-      borderRadius: 5,
-      backgroundColor: '#788eec',
-      width: '100%',
-      alignItems: "center",
-      justifyContent: 'center',
-      marginBottom: 2
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 16
-    }
-  })
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={getLocalFile} style={styles.button} >
-        <Text style={styles.buttonText}>Select a text file to speed read</Text>
-      </TouchableOpacity>
-      <Text>{file}</Text>
-    </View>
+    <TouchableOpacity onPress={getLocalFile} style={theme.button} >
+      <Text style={theme.buttonTitle}>Select a text file to speed read</Text>
+    </TouchableOpacity>
   )
 }
