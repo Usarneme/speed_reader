@@ -94,7 +94,11 @@ export const myLightTheme = {
   footerText: {
     ...common.footerText,
     color: lightColors.primary
-  }}
+  },
+  iconColor: lightColors.text,
+  iconSize: 28,
+  inactiveTintColor: lightColors.text,
+}
 
 const darkColors = {
   ...DarkTheme.colors,
@@ -120,5 +124,8 @@ export const myDarkTheme = {
   footerText: {
     ...common.footerText,
     color: darkColors.primary
-  }
+  },
+  iconColor: darkColors.text,
+  iconSize: 28,
+  inactiveTintColor: darkColors.text,
 }

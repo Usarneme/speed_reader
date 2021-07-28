@@ -23,6 +23,7 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   const scheme = useColorScheme();
+  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme
 
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState(null)
@@ -60,21 +61,24 @@ export default function App() {
   return (
     <>
       <Header />
-      <NavigationContainer theme={scheme === 'dark' ? myDarkTheme : myLightTheme}>
-        <Tab.Navigator>
+      <NavigationContainer theme={theme}>
+        <Tab.Navigator
+          tabBarOptions={{
+            activeTintColor: theme.activeTintColor,
+            inactiveTintColor: theme.inactiveTintColor,
+          }}
+        >
           { user ? (
             <>
               <Tab.Screen
                 name="Home"
-                options={{
-                  tabBarIcon: ({ color, size }) => ( <Ionicons name="home" size={size} color={color} /> )}}
+                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.iconColor} /> }}
               >
                 {props => <SpeedReaderScreen {...props} extraData={user} />}
               </Tab.Screen>
               <Tab.Screen
                 name="Account"
-                options={{
-                  tabBarIcon: ({ color, size }) => ( <MaterialCommunityIcons name="account" size={size} color={color} /> )}}
+                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.iconColor} /> }}
               >
                 {props => <AccountScreen {...props} extraData={user} />}
               </Tab.Screen>
@@ -84,20 +88,17 @@ export default function App() {
               <Tab.Screen
                 name="Home"
                 component={SpeedReaderScreen}
-                options={{
-                  tabBarIcon: ({ color, size }) => ( <Ionicons name="home" size={size} color={color} /> )}}
+                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.iconColor} /> }}
               />
               <Tab.Screen
                 name="Login"
                 component={LoginScreen}
-                options={{
-                  tabBarIcon: ({ color, size }) => ( <MaterialCommunityIcons name="login" size={size} color={color} /> )}}
+                options={{ tabBarIcon: () => <MaterialCommunityIcons name="login" size={theme.iconSize} color={theme.iconColor} /> }}
               />
               <Tab.Screen
                 name="Registration"
                 component={RegistrationScreen}
-                options={{
-                  tabBarIcon: ({ color, size }) => ( <MaterialCommunityIcons name="account" size={size} color={color} /> )}}
+                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.iconColor} /> }}
               />
             </>
           )}
