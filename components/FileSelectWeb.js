@@ -61,7 +61,7 @@ export default function FileSelectWeb(props) {
 
   return (
     <>
-      <label for='file' style={{...theme.button, ...theme.buttonTitle, ...styles.label}}>Select Text File</label>
+      <label htmlFor='file' style={{...theme.button, ...theme.buttonTitle, ...styles.label}}>Select Text File</label>
       <input type='file' style={{...styles.input}} name='file' id='file' onChange={e => handleFile(e)} />
     </>
   )

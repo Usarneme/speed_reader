@@ -141,7 +141,7 @@ export default function HomeScreen() {
             multiline={true}
             numberOfLines={15}
           />
-          { text.length > 0 &&
+          { text.length > 1 &&
             <TouchableOpacity
               style={theme.button}
               onPress={clearText}>

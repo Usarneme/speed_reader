@@ -1,23 +1,45 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { myDarkTheme, myLightTheme } from './../styles/Theme';
 
 export default function ReaderControls(props) {
+  const scheme = useColorScheme();
+  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+
+  const styles = StyleSheet.create({
+    controlsHeading: {
+      textAlign: 'center',
+      color: theme.heading.color,
+      fontSize: 22
+    },
+    splitView: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    splitButton: {
+      ...theme.button,
+      flex: 1,
+    }
+  })
 
   return (
-    <View style={styles.container}>
+    <View style={theme.container}>
       <Text style={styles.controlsHeading}>Controls</Text>
-      <TouchableOpacity style={styles.button} onPress={props.disableSpeedReader}>
-        <Text style={styles.buttonText}>Change Text</Text>
+      <View style={styles.splitView}>
+        <TouchableOpacity style={styles.splitButton} onPress={props.startSpeedReading} >
+          <Ionicons name="play-outline" size={theme.iconSize} color={theme.buttonTitle.color} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.splitButton} onPress={props.pauseSpeedReading} >
+          <Ionicons name="pause-outline" size={theme.iconSize} color={theme.buttonTitle.color} />
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity style={theme.button} onPress={() => props.setCurrentWordIndex(0)} >
+        <Text style={theme.buttonTitle}>Restart</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={props.startSpeedReading} >
-        <Text style={styles.buttonText}>Play</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={props.pauseSpeedReading} >
-        <Text style={styles.buttonText}>Pause</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => props.setCurrentWordIndex(0)} >
-        <Text style={styles.buttonText}>Restart</Text>
+      <TouchableOpacity style={theme.button} onPress={props.disableSpeedReader}>
+        <Text style={theme.buttonTitle}>Change Text</Text>
       </TouchableOpacity>
       <View >
         <Slider
@@ -32,31 +54,3 @@ export default function ReaderControls(props) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-    container: {
-      display: 'flex',
-      flex: 1,
-    },
-    controlsHeading: {
-      textAlign: 'center',
-      borderColor: 'gray',
-      borderBottomWidth: 2,
-      borderStyle: 'dashed',
-      color: '#eee',
-      fontSize: 22
-    },
-    button: {
-      height: 32,
-      borderRadius: 5,
-      backgroundColor: '#788eec',
-      width: '100%',
-      alignItems: "center",
-      justifyContent: 'center',
-      marginBottom: 2
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 16
-    }
-  })
