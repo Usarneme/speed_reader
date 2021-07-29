@@ -12,7 +12,11 @@ App is awaiting approval to be available on the Google Play Store. Stay tuned!
 
 #### iPhone, Web, and Android
 
-<img width="480px" src="./ReadmeAssets/devices.png" alt="android, iphone, and web implementations" />
+<img width="500px" src="./ReadmeAssets/devices.png" alt="android, iphone, and web implementations" />
+
+### iPhone 12 Max and iPad Pro 12.9"
+
+<img width="500px" src="./ReadmeAssets/ipad.png" alt="iphone and ipad implementations" />
 
 #### iPhone Detailed View
 
