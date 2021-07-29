@@ -109,3 +109,6 @@ dist
 
 # expo folder
 *.expo
+
+# web build/generated build files
+web-build

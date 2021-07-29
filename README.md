@@ -1,15 +1,35 @@
 # SpdRdr
 
-A speed reading application.
+SpdRdr is an application used to increase the rate at which you read text on your device of choice: iOS, Android, and web! Simply paste text into the input or select a text file on your device to start speed reading. Use the handy slider to set the speed at which the app displays a single word of text on the screen. You can range anywhere from 100 to 3000 words per minute!
+
+This is primarily built for mobile devices but there is a web app build available at http://spdrdr.surge.sh. Try it out!
+
+App is awaiting approval to be available on the Google Play Store. Stay tuned!
 
 ---
 
-## Requirements
+## App Screen Examples
+
+### Android
+
+<img width="280px" src="./ReadmeAssets/android.png" alt="android implementation" />
+
+### iPhone
+
+<img width="280px" src="./ReadmeAssets/iphone.png" alt="iphone implementation" />
+
+### iPhone, Web, and Android
+
+<img width="280px" src="./ReadmeAssets/devices.png" alt="android, iphone, and web implementations" />
+
+---
+
+## Requirements To Build It Locally
 
 1. [NodeJs](https://nodejs.org/en/)
 2. [Npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
 3. [Expo](https://docs.expo.io/get-started/installation/)
-4. A browser such as [Firefox](https://www.mozilla.org/en-US/firefox/new/)
+4. A browser such as [Firefox](https://www.mozilla.org/en-US/firefox/new/), Android Emulator (such as via Android Studio), or iOS device simulator program (such as Xcode).
 
 ---
 
@@ -29,9 +49,9 @@ A speed reading application.
 2. Expo
 3. Babel
 4. Webpack
-5. JavaScript/JSX
+5. JavaScript and JSX
 6. React Native Stylesheets
-7. Firebase + Firestore
+7. Firebase + Firestore For User Accounts, Auth, and Data Storage
 8. Redux
 
 ---
