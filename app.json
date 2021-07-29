@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "speedreader",
-    "slug": "spdrdr",
+    "name": "SpdRdr",
+    "slug": "SpdRdr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/Miami_potato_square.png",
@@ -24,7 +24,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Miami_potato_square.png",
         "backgroundColor": "#eee"
-      }
+      },
+      "package": "com.usarneme.spdrdr",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
