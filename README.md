@@ -10,17 +10,13 @@ App is awaiting approval to be available on the Google Play Store. Stay tuned!
 
 ## App Screen Examples
 
-### Android
+#### iPhone, Web, and Android
 
-<img width="280px" src="./ReadmeAssets/android.png" alt="android implementation" />
+<img width="480px" src="./ReadmeAssets/devices.png" alt="android, iphone, and web implementations" />
 
-### iPhone
+#### iPhone Detailed View
 
 <img width="280px" src="./ReadmeAssets/iphone.png" alt="iphone implementation" />
-
-### iPhone, Web, and Android
-
-<img width="280px" src="./ReadmeAssets/devices.png" alt="android, iphone, and web implementations" />
 
 ---
 
