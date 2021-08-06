@@ -71,12 +71,12 @@ export default function HomeScreen() {
   }
 
   const changeText = text => {
-    setText(text);
+    setText(text.trim());
     setCurrentWordIndex(0);
   }
 
   const speedReadInputText = () => {
-    setTextArray(text.trim().split(/[ ,'--']+/));
+    setTextArray(text.trim().replace(/[^\w,.]|\n+/g, ' ').split(" "));
     enableSpeedReader()
   }
 
