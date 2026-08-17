@@ -109,6 +109,12 @@ dist
 
 # expo folder
 *.expo
+.expo/
 
 # web build/generated build files
 web-build
+dist
+
+# generated native directories
+/android/
+/ios/
