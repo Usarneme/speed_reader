@@ -2,19 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAppTheme } from '../context/ThemeContext';
-import firebase from '../firebase';
 
-export default function AccountScreen({ navigation: { navigate } }) {
+export default function SettingsScreen() {
   const { theme, themeMode, setThemeMode } = useAppTheme();
-
-  const signOut = async () => {
-    try {
-      await firebase.auth().signOut();
-    } catch (err) {
-      console.log('ERROR SIGNING OUT', err);
-    }
-    navigate('Home');
-  };
 
   const options = [
     { key: 'system', label: 'System Theme' },
@@ -23,19 +13,23 @@ export default function AccountScreen({ navigation: { navigate } }) {
   ];
 
   const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.backgroundColor || theme.colors.background,
+    },
     section: {
       padding: 20,
     },
     sectionTitle: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: 'bold',
-      marginBottom: 12,
+      marginBottom: 16,
       color: theme.colors.primary,
     },
     optionButton: {
-      padding: 12,
-      borderRadius: 6,
-      marginBottom: 8,
+      padding: 16,
+      borderRadius: 8,
+      marginBottom: 10,
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.card,
@@ -55,10 +49,10 @@ export default function AccountScreen({ navigation: { navigate } }) {
   });
 
   return (
-    <View style={theme.container}>
+    <View style={styles.container}>
       <KeyboardAwareScrollView>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Theme Settings</Text>
+          <Text style={styles.sectionTitle}>Appearance & Theme</Text>
           {options.map((opt) => {
             const isActive = themeMode === opt.key;
             return (
@@ -66,6 +60,7 @@ export default function AccountScreen({ navigation: { navigate } }) {
                 key={opt.key}
                 style={[styles.optionButton, isActive && styles.activeOption]}
                 onPress={() => setThemeMode(opt.key)}
+                activeOpacity={0.7}
               >
                 <Text style={[styles.optionText, isActive && styles.activeOptionText]}>
                   {opt.label} {isActive ? '✓' : ''}
@@ -74,12 +69,6 @@ export default function AccountScreen({ navigation: { navigate } }) {
             );
           })}
         </View>
-
-        <TouchableOpacity
-          style={theme.button}
-          onPress={signOut}>
-          <Text style={theme.buttonTitle}>Sign out</Text>
-        </TouchableOpacity>
       </KeyboardAwareScrollView>
     </View>
   );

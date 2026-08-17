@@ -1,59 +1,18 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { decode, encode } from 'base-64';
+import { Ionicons } from '@expo/vector-icons';
 
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import AccountScreen from './screens/AccountScreen';
-import LoginScreen from './screens/LoginScreen';
-import RegistrationScreen from './screens/RegistrationScreen';
 import SpeedReaderScreen from './screens/SpeedReaderScreen';
+import SettingsScreen from './screens/SettingsScreen';
 import Header from './components/Header';
 import { ThemeProvider, useAppTheme } from './context/ThemeContext';
-
-import firebase from './firebase';
-
-if (!global.btoa) { global.btoa = encode }
-if (!global.atob) { global.atob = decode }
 
 const Tab = createBottomTabNavigator();
 
 function MainAppContent() {
   const { theme } = useAppTheme();
-
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const usersRef = firebase.firestore().collection('users');
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        usersRef
-          .doc(user.uid)
-          .get()
-          .then((document) => {
-            const userData = document.data();
-            setLoading(false);
-            setUser(userData);
-          })
-          .catch((error) => {
-            console.log("ERROR AUTHENTICATING");
-            console.dir(error);
-            setLoading(false);
-          });
-      } else {
-        console.log("NO USER FOUND");
-        setLoading(false);
-      }
-    });
-  }, []);
-
-  if (loading) {
-    return (
-      <>Loading...</>
-    );
-  }
 
   return (
     <NavigationContainer theme={theme}>
@@ -64,40 +23,20 @@ function MainAppContent() {
           tabBarInactiveTintColor: theme.inactiveTintColor,
         }}
       >
-        { user ? (
-          <>
-            <Tab.Screen
-              name="Home"
-              options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-            >
-              {props => <SpeedReaderScreen {...props} extraData={user} />}
-            </Tab.Screen>
-            <Tab.Screen
-              name="Account"
-              options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-            >
-              {props => <AccountScreen {...props} extraData={user} />}
-            </Tab.Screen>
-          </>
-        ) : (
-          <>
-            <Tab.Screen
-              name="Home"
-              component={SpeedReaderScreen}
-              options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-            />
-            <Tab.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ tabBarIcon: () => <MaterialCommunityIcons name="login" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-            />
-            <Tab.Screen
-              name="Registration"
-              component={RegistrationScreen}
-              options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-            />
-          </>
-        )}
+        <Tab.Screen
+          name="Home"
+          component={SpeedReaderScreen}
+          options={{
+            tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} />
+          }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: () => <Ionicons name="settings-outline" size={theme.iconSize} color={theme.inactiveTintColor} />
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
