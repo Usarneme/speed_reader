@@ -63,9 +63,9 @@ export default function App() {
       <Header />
       <NavigationContainer theme={theme}>
         <Tab.Navigator
-          tabBarOptions={{
-            activeTintColor: theme.activeTintColor,
-            inactiveTintColor: theme.inactiveTintColor,
+          screenOptions={{
+            tabBarActiveTintColor: theme.activeTintColor,
+            tabBarInactiveTintColor: theme.inactiveTintColor,
           }}
         >
           { user ? (

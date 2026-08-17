@@ -1,7 +1,7 @@
-import firebase from 'firebase/app';
-import 'firebase/database';
-import 'firebase/firestore';
-import 'firebase/auth';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 import {  FIREBASE_API_KEY,
           FIREBASE_AUTH_DOMAIN,
           FIREBASE_PROJECT_ID,
