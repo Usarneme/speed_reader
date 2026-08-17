@@ -49,7 +49,7 @@ const common = {
     margin: 5,
     marginTop: 0,
     padding: 5,
-    height: '100%',
+    flex: 1,
   },
   tabMenu: {
     backgroundColor: '#434c5e',
