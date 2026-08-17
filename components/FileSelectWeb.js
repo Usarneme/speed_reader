@@ -1,10 +1,8 @@
 import React from 'react';
-import { useColorScheme } from 'react-native';
-import { myDarkTheme, myLightTheme } from './../styles/Theme';
+import { useAppTheme } from '../context/ThemeContext';
 
 export default function FileSelectWeb(props) {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+  const { theme } = useAppTheme();
 
   const handleFile = event => {
     const file = event.target.files[0]

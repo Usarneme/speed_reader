@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, useColorScheme } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
-
-import { myDarkTheme, myLightTheme } from './../styles/Theme';
+import { useAppTheme } from '../context/ThemeContext';
 
 export default function FileSelectMobile(props) {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+  const { theme } = useAppTheme();
 
   const getLocalFile = async () => {
     console.log('get local file clicked')

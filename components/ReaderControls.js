@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { myDarkTheme, myLightTheme } from './../styles/Theme';
+import { useAppTheme } from '../context/ThemeContext';
 
 export default function ReaderControls(props) {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+  const { theme } = useAppTheme();
 
   const styles = StyleSheet.create({
     controlsHeading: {

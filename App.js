@@ -5,14 +5,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { decode, encode } from 'base-64';
 
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
-import { myDarkTheme, myLightTheme } from './styles/Theme';
-
 import AccountScreen from './screens/AccountScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import SpeedReaderScreen from './screens/SpeedReaderScreen';
 import Header from './components/Header';
+import { ThemeProvider, useAppTheme } from './context/ThemeContext';
 
 import firebase from './firebase';
 
@@ -21,12 +19,11 @@ if (!global.atob) { global.atob = decode }
 
 const Tab = createBottomTabNavigator();
 
-export default function App() {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme
+function MainAppContent() {
+  const { theme } = useAppTheme();
 
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const usersRef = firebase.firestore().collection('users');
@@ -36,18 +33,18 @@ export default function App() {
           .doc(user.uid)
           .get()
           .then((document) => {
-            const userData = document.data()
-            setLoading(false)
-            setUser(userData)
+            const userData = document.data();
+            setLoading(false);
+            setUser(userData);
           })
           .catch((error) => {
-            console.log("ERROR AUTHENTICATING")
-            console.dir(error)
-            setLoading(false)
+            console.log("ERROR AUTHENTICATING");
+            console.dir(error);
+            setLoading(false);
           });
       } else {
-        console.log("NO USER FOUND")
-        setLoading(false)
+        console.log("NO USER FOUND");
+        setLoading(false);
       }
     });
   }, []);
@@ -55,55 +52,61 @@ export default function App() {
   if (loading) {
     return (
       <>Loading...</>
-    )
+    );
   }
 
   return (
-    <>
+    <NavigationContainer theme={theme}>
       <Header />
-      <NavigationContainer theme={theme}>
-        <Tab.Navigator
-          screenOptions={{
-            tabBarActiveTintColor: theme.activeTintColor,
-            tabBarInactiveTintColor: theme.inactiveTintColor,
-          }}
-        >
-          { user ? (
-            <>
-              <Tab.Screen
-                name="Home"
-                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-              >
-                {props => <SpeedReaderScreen {...props} extraData={user} />}
-              </Tab.Screen>
-              <Tab.Screen
-                name="Account"
-                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-              >
-                {props => <AccountScreen {...props} extraData={user} />}
-              </Tab.Screen>
-            </>
-          ) : (
-            <>
-              <Tab.Screen
-                name="Home"
-                component={SpeedReaderScreen}
-                options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-              />
-              <Tab.Screen
-                name="Login"
-                component={LoginScreen}
-                options={{ tabBarIcon: () => <MaterialCommunityIcons name="login" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-              />
-              <Tab.Screen
-                name="Registration"
-                component={RegistrationScreen}
-                options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
-              />
-            </>
-          )}
-        </Tab.Navigator>
-      </NavigationContainer>
-    </>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: theme.activeTintColor,
+          tabBarInactiveTintColor: theme.inactiveTintColor,
+        }}
+      >
+        { user ? (
+          <>
+            <Tab.Screen
+              name="Home"
+              options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
+            >
+              {props => <SpeedReaderScreen {...props} extraData={user} />}
+            </Tab.Screen>
+            <Tab.Screen
+              name="Account"
+              options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
+            >
+              {props => <AccountScreen {...props} extraData={user} />}
+            </Tab.Screen>
+          </>
+        ) : (
+          <>
+            <Tab.Screen
+              name="Home"
+              component={SpeedReaderScreen}
+              options={{ tabBarIcon: () => <Ionicons name="home" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
+            />
+            <Tab.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ tabBarIcon: () => <MaterialCommunityIcons name="login" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
+            />
+            <Tab.Screen
+              name="Registration"
+              component={RegistrationScreen}
+              options={{ tabBarIcon: () => <MaterialCommunityIcons name="account" size={theme.iconSize} color={theme.inactiveTintColor} /> }}
+            />
+          </>
+        )}
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <MainAppContent />
+    </ThemeProvider>
   );
 }

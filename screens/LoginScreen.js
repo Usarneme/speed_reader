@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useColorScheme, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { myDarkTheme, myLightTheme } from './../styles/Theme';
-import firebase from '../firebase'
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAppTheme } from '../context/ThemeContext';
+import firebase from '../firebase';
 
 export default function LoginScreen({navigation}) {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+  const { theme } = useAppTheme();
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

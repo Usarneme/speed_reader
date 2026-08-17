@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useColorScheme, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { myDarkTheme, myLightTheme } from './../styles/Theme';
+import { useAppTheme } from '../context/ThemeContext';
 import firebase from '../firebase';
 
 export default function RegistrationScreen({navigation}) {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+  const { theme } = useAppTheme();
 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')

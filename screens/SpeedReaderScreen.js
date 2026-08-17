@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
-import { myDarkTheme, myLightTheme } from './../styles/Theme';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAppTheme } from '../context/ThemeContext';
 
 import ReaderControls from '../components/ReaderControls';
 import FileSelect from '../components/FileSelect';
 
 export default function HomeScreen() {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? myDarkTheme : myLightTheme;
+  const { theme } = useAppTheme();
 
   const [inputShowing, showInput] = useState(true);
   const [readerShowing, showReader] = useState(false);
