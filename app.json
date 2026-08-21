@@ -27,8 +27,7 @@
         "foregroundImage": "./assets/images/Miami_potato_square.png",
         "backgroundColor": "#eee"
       },
-      "package": "com.usarneme.spdrdr",
-      "versionCode": 1
+      "package": "com.usarneme.spdrdr"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
