@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useAppTheme } from '../context/ThemeContext';
 
 import ReaderControls from '../components/ReaderControls';
 import FileSelect from '../components/FileSelect';
+import AnimatedPressable from '../components/AnimatedPressable';
 
 export default function HomeScreen() {
   const { theme } = useAppTheme();
@@ -75,6 +76,49 @@ export default function HomeScreen() {
     showReader(false);
   };
 
+  // Keyboard Shortcuts Listener for Web & Desktop/Tablet
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !readerShowing) return;
+
+    const handleKeyDown = (event) => {
+      const targetTag = event.target?.tagName?.toLowerCase();
+      if (targetTag === 'input' || targetTag === 'textarea') return;
+
+      switch (event.key) {
+        case ' ':
+        case 'k':
+        case 'K':
+          event.preventDefault();
+          togglePlayPause();
+          break;
+        case 'ArrowUp':
+        case 'ArrowRight':
+          event.preventDefault();
+          setWpm(prev => Math.min(900, prev + 10));
+          break;
+        case 'ArrowDown':
+        case 'ArrowLeft':
+          event.preventDefault();
+          setWpm(prev => Math.max(60, prev - 10));
+          break;
+        case 'r':
+        case 'R':
+          event.preventDefault();
+          setCurrentWordIndex(0);
+          break;
+        case 'Escape':
+          event.preventDefault();
+          disableSpeedReader();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [readerShowing, isPlaying, togglePlayPause, disableSpeedReader]);
+
   const changeText = text => {
     setText(text);
     setCurrentWordIndex(0);
@@ -105,6 +149,7 @@ export default function HomeScreen() {
   const totalWords = textArray.length;
   const currentWordDisplay = totalWords > 0 ? currentWordIndex + 1 : 0;
   const progressPercent = totalWords > 0 ? (currentWordDisplay / totalWords) * 100 : 0;
+  const currentWord = textArray[currentWordIndex] || '';
 
   const styles = StyleSheet.create({
     container: {
@@ -196,7 +241,9 @@ export default function HomeScreen() {
     <View style={[theme.container, styles.container]}>
       {inputShowing && (
         <View style={styles.inputContainer}>
-          <Text style={theme.heading}>Enter Text</Text>
+          <Text style={theme.heading} accessibilityRole="header">
+            Enter Text
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="Welcome to SpdRdr the speed reader app! Paste or select text to speed read it!"
@@ -206,36 +253,56 @@ export default function HomeScreen() {
             underlineColorAndroid="transparent"
             autoCapitalize="none"
             multiline={true}
+            accessibilityLabel="Speed reader text input field"
+            accessibilityHint="Paste or type document text here to speed read"
           />
           {text.length > 0 && (
             <View style={{ marginBottom: 8 }}>
-              <TouchableOpacity style={theme.button} onPress={clearText}>
+              <AnimatedPressable
+                style={theme.button}
+                onPress={clearText}
+                accessibilityRole="button"
+                accessibilityLabel="Clear input text"
+                aria-label="Clear input text"
+              >
                 <Text style={theme.buttonTitle}>Clear Text</Text>
-              </TouchableOpacity>
+              </AnimatedPressable>
             </View>
           )}
-          <TouchableOpacity
+          <AnimatedPressable
             style={theme.button}
             onPress={speedReadInputText}
             disabled={!text.trim()}
+            accessibilityRole="button"
+            accessibilityLabel="Speed read input text"
+            accessibilityHint="Begins speed reader playback for the typed or pasted text"
+            aria-label="Speed read input text"
           >
             <Text style={theme.buttonTitle}>Speed Read Input Text</Text>
-          </TouchableOpacity>
+          </AnimatedPressable>
           <Text style={styles.divider}>or</Text>
           <FileSelect addTextFromFile={speedReadTextFromFile} />
         </View>
       )}
 
       {readerShowing && (
-        <View style={styles.readerContainer}>
+        <View
+          style={styles.readerContainer}
+          accessibilityRole="summary"
+          accessibilityLabel={`Speed reader display. Current word: ${currentWord}. Word ${currentWordDisplay} of ${totalWords}`}
+        >
           <View style={styles.focalGuideTop} />
           <Text
             style={styles.readerText}
             adjustsFontSizeToFit={true}
             numberOfLines={1}
             minimumFontScale={0.3}
+            accessibilityRole="text"
+            accessibilityLiveRegion="polite"
+            aria-live="polite"
+            accessibilityLabel={currentWord}
           >
-            {textArray[currentWordIndex] || ''}
+            {currentWord}
           </Text>
           <View style={styles.focalGuideBottom} />
 
@@ -244,7 +311,11 @@ export default function HomeScreen() {
             <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
           </View>
           {totalWords > 0 && (
-            <Text style={styles.progressText}>
+            <Text
+              style={styles.progressText}
+              accessibilityRole="text"
+              accessibilityLabel={`Word ${currentWordDisplay} of ${totalWords}, ${Math.round(progressPercent)} percent complete`}
+            >
               Word {currentWordDisplay} of {totalWords} ({Math.round(progressPercent)}%)
             </Text>
           )}

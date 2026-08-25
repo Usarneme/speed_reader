@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../context/ThemeContext';
+import AnimatedPressable from './AnimatedPressable';
 
 export default function ReaderControls(props) {
   const { theme } = useAppTheme();
@@ -52,7 +53,7 @@ export default function ReaderControls(props) {
       marginVertical: 2,
     },
     stepButton: {
-      padding: 4,
+      padding: 6,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -97,21 +98,36 @@ export default function ReaderControls(props) {
     <View style={styles.container}>
       {/* Primary Play/Pause Action */}
       <View style={styles.primaryControlRow}>
-        <TouchableOpacity style={styles.playPauseButton} onPress={togglePlayPause} activeOpacity={0.8}>
+        <AnimatedPressable
+          style={styles.playPauseButton}
+          onPress={togglePlayPause}
+          accessibilityRole="button"
+          accessibilityLabel={isPlaying ? 'Pause speed reading' : 'Start speed reading'}
+          accessibilityHint="Toggles text playback"
+          accessibilityState={{ checked: isPlaying }}
+          aria-label={isPlaying ? 'Pause speed reading' : 'Start speed reading'}
+        >
           <Ionicons
             name={isPlaying ? 'pause' : 'play'}
             size={20}
             color={theme.buttonTitle.color}
           />
           <Text style={styles.playPauseText}>{isPlaying ? 'Pause' : 'Play'}</Text>
-        </TouchableOpacity>
+        </AnimatedPressable>
       </View>
 
       {/* Speed Adjustment Slider with + / - Buttons */}
       <View style={styles.speedControlsRow}>
-        <TouchableOpacity style={styles.stepButton} onPress={handleMinus}>
+        <AnimatedPressable
+          style={styles.stepButton}
+          onPress={handleMinus}
+          accessibilityRole="button"
+          accessibilityLabel="Decrease speed"
+          accessibilityHint="Decreases reading speed by 10 words per minute"
+          aria-label="Decrease speed by 10 words per minute"
+        >
           <Ionicons name="remove-circle-outline" size={26} color={theme.colors.text || '#fff'} />
-        </TouchableOpacity>
+        </AnimatedPressable>
 
         <Slider
           style={styles.slider}
@@ -123,24 +139,58 @@ export default function ReaderControls(props) {
           maximumTrackTintColor="#ccc"
           thumbTintColor={theme.colors.primary || '#007AFF'}
           onValueChange={v => setWpm(Math.round(v))}
+          accessibilityRole="adjustable"
+          accessibilityLabel="Reading speed in words per minute"
+          accessibilityValue={{ min: 60, max: 900, now: wpm, text: `${wpm} words per minute` }}
+          aria-label="Reading speed slider"
+          aria-valuemin={60}
+          aria-valuemax={900}
+          aria-valuenow={wpm}
         />
 
-        <TouchableOpacity style={styles.stepButton} onPress={handlePlus}>
+        <AnimatedPressable
+          style={styles.stepButton}
+          onPress={handlePlus}
+          accessibilityRole="button"
+          accessibilityLabel="Increase speed"
+          accessibilityHint="Increases reading speed by 10 words per minute"
+          aria-label="Increase speed by 10 words per minute"
+        >
           <Ionicons name="add-circle-outline" size={26} color={theme.colors.text || '#fff'} />
-        </TouchableOpacity>
+        </AnimatedPressable>
       </View>
 
-      <Text style={styles.wpmDisplay}>{wpm} WPM</Text>
+      <Text
+        style={styles.wpmDisplay}
+        accessibilityRole="text"
+        accessibilityLabel={`${wpm} words per minute`}
+      >
+        {wpm} WPM
+      </Text>
 
       {/* Secondary Actions (Restart / Change Text) */}
       <View style={styles.secondaryActionsRow}>
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => setCurrentWordIndex(0)}>
+        <AnimatedPressable
+          style={styles.secondaryButton}
+          onPress={() => setCurrentWordIndex(0)}
+          accessibilityRole="button"
+          accessibilityLabel="Restart reading"
+          accessibilityHint="Resets speed reader playback to the first word"
+          aria-label="Restart reading"
+        >
           <Text style={styles.secondaryButtonText}>Restart</Text>
-        </TouchableOpacity>
+        </AnimatedPressable>
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={disableSpeedReader}>
+        <AnimatedPressable
+          style={styles.secondaryButton}
+          onPress={disableSpeedReader}
+          accessibilityRole="button"
+          accessibilityLabel="Change text"
+          accessibilityHint="Exits reader view to select or paste a new document"
+          aria-label="Change text document"
+        >
           <Text style={styles.secondaryButtonText}>Change Text</Text>
-        </TouchableOpacity>
+        </AnimatedPressable>
       </View>
     </View>
   );
