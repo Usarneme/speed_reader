@@ -24,6 +24,12 @@ export default function FileSelectWeb(props) {
   };
 
   const styles = {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      width: '100%',
+    },
     input: {
       opacity: 0,
       position: 'absolute',
@@ -40,15 +46,23 @@ export default function FileSelectWeb(props) {
       textAlign: 'center',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       marginTop: 0,
-      padding: 0,
+      padding: '0 24px',
       opacity: loading ? 0.7 : 1,
+    },
+    allowedText: {
+      fontSize: 12,
+      marginTop: 6,
+      textAlign: 'center',
+      color: theme.colors.textMuted || '#71717A',
+      fontWeight: '500',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     },
   };
 
   return (
-    <>
+    <div style={styles.container}>
       <label htmlFor="file" style={{ ...theme.button, ...theme.buttonTitle, ...styles.label }}>
-        {loading ? 'Processing Document...' : 'Select File (.txt, .pdf, .docx, .epub, .md, .rtf)'}
+        {loading ? 'Processing Document...' : 'Select File'}
       </label>
       <input
         type="file"
@@ -59,6 +73,9 @@ export default function FileSelectWeb(props) {
         onChange={(e) => handleFile(e)}
         disabled={loading}
       />
-    </>
+      <span style={styles.allowedText}>
+        Allowed file types: .txt, .pdf, .docx, .epub, .odt, .rtf, .md, .html
+      </span>
+    </div>
   );
 }

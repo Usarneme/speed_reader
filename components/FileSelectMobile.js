@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAppTheme } from '../context/ThemeContext';
 import { parseFileToText } from '../utils/fileParsers';
+import AnimatedPressable from './AnimatedPressable';
 
 export default function FileSelectMobile(props) {
   const { theme } = useAppTheme();
@@ -62,12 +63,38 @@ export default function FileSelectMobile(props) {
   };
 
   return (
-    <TouchableOpacity onPress={getLocalFile} style={theme.button} disabled={loading}>
-      {loading ? (
-        <ActivityIndicator color="#fff" />
-      ) : (
-        <Text style={theme.buttonTitle}>Select File (.txt, .pdf, .docx, .epub, .md, .rtf)</Text>
-      )}
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <AnimatedPressable
+        onPress={getLocalFile}
+        style={theme.button}
+        disabled={loading}
+        accessibilityRole="button"
+        accessibilityLabel="Select file to speed read"
+        accessibilityHint="Opens file picker to select a document"
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={theme.buttonTitle}>Select File</Text>
+        )}
+      </AnimatedPressable>
+
+      <Text style={[styles.allowedText, { color: theme.colors.textMuted || '#71717A' }]}>
+        Allowed file types: .txt, .pdf, .docx, .epub, .odt, .rtf, .md, .html
+      </Text>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  allowedText: {
+    fontSize: 12,
+    marginTop: 6,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+});

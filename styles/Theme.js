@@ -1,54 +1,81 @@
 import { Platform } from 'react-native';
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 
-const buttonBackgroundColor = '#788eec';
+/**
+ * Official Nord Color Palette Tokens
+ * https://www.nordtheme.com/docs/colors-and-palettes
+ */
+export const NORD = {
+  // Polar Night
+  nord0: '#2E3440',
+  nord1: '#3B4252',
+  nord2: '#434C5E',
+  nord3: '#4C566A',
+  // Snow Storm
+  nord4: '#D8DEE9',
+  nord5: '#E5E9F0',
+  nord6: '#ECEFF4',
+  // Frost (Accents)
+  nord7: '#8FBCBB',
+  nord8: '#88C0D0',
+  nord9: '#81A1C1',
+  nord10: '#5E81AC',
+};
+
+const primaryColor = NORD.nord10; // #5E81AC (Nord Deep Steel Blue)
+const primaryColorDark = NORD.nord8; // #88C0D0 (Nord Ice Frost)
 const cursorOnWeb = Platform.OS === 'ios' || Platform.OS === 'android' ? null : { cursor: 'pointer' };
 
 const common = {
   fontSize: 22,
   button: {
-    backgroundColor: buttonBackgroundColor,
-    marginLeft: 20,
-    marginRight: 20,
+    backgroundColor: primaryColor,
+    marginLeft: 16,
+    marginRight: 16,
     marginTop: 10,
-    height: 42,
-    borderRadius: 5,
+    height: 46,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: primaryColor,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
     ...cursorOnWeb,
   },
   buttonTitle: {
     textTransform: 'uppercase',
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#ECEFF4',
+    fontSize: 15,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   heading: {
-    marginTop: 9,
-    marginBottom: 6,
-    fontWeight: 'bold',
-    fontSize: 32,
+    marginTop: 12,
+    marginBottom: 8,
+    fontWeight: '800',
+    fontSize: 28,
     textAlign: 'center',
+    letterSpacing: -0.5,
   },
   input: {
     height: 48,
-    borderRadius: 5,
+    borderRadius: 8,
     overflow: 'hidden',
-    backgroundColor: '#eee',
+    backgroundColor: NORD.nord5,
     marginTop: 10,
     marginBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
+    marginLeft: 20,
+    marginRight: 20,
     paddingLeft: 16,
   },
   container: {
-    margin: 5,
-    marginTop: 0,
-    padding: 5,
+    padding: 10,
     flex: 1,
   },
   tabMenu: {
-    backgroundColor: '#434c5e',
+    backgroundColor: NORD.nord1,
     marginTop: 18,
     padding: 8,
     alignItems: 'center',
@@ -60,24 +87,25 @@ const common = {
     marginTop: 20,
   },
   footerText: {
-    fontSize: 16,
+    fontSize: 15,
   },
   footerLink: {
-    color: buttonBackgroundColor,
+    color: primaryColor,
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
   },
 };
 
 const lightColors = {
   ...DefaultTheme.colors,
-  background: '#eee',
-  border: '#888',
-  buttonColor: '#333444',
-  card: '#f7f7f7',
-  primary: '#333',
-  text: '#666',
-  input: '#fff',
+  background: NORD.nord6, // #ECEFF4 (Snow Storm background)
+  border: NORD.nord4,     // #D8DEE9
+  buttonColor: primaryColor,
+  card: '#FFFFFF',
+  primary: primaryColor,  // #5E81AC
+  text: NORD.nord0,        // #2E3440 (Polar Night text)
+  textMuted: NORD.nord3,   // #4C566A
+  input: '#FFFFFF',
 };
 
 export const myLightTheme = {
@@ -95,9 +123,9 @@ export const myLightTheme = {
     color: lightColors.primary,
   },
   iconColor: lightColors.text,
-  iconSize: 28,
+  iconSize: 24,
   activeTintColor: lightColors.primary,
-  inactiveTintColor: lightColors.text,
+  inactiveTintColor: lightColors.textMuted,
   input: {
     ...common.input,
     backgroundColor: lightColors.input,
@@ -106,14 +134,15 @@ export const myLightTheme = {
 
 const darkColors = {
   ...DarkTheme.colors,
-  background: '#2e3440',
-  border: '#111',
-  buttonColor: '#333444',
-  card: '#434c5e',
-  notification: '#4c566a',
-  primary: '#d7ddd8',
-  text: '#fafffb',
-  input: '#ddd',
+  background: NORD.nord0, // #2E3440 (Polar Night background)
+  border: NORD.nord3,     // #4C566A
+  buttonColor: primaryColorDark,
+  card: NORD.nord1,       // #3B4252 (Polar Surface Card)
+  notification: NORD.nord2,
+  primary: primaryColorDark, // #88C0D0 (Frost Ice Blue)
+  text: NORD.nord6,        // #ECEFF4 (Snow Storm text)
+  textMuted: NORD.nord4,   // #D8DEE9
+  input: NORD.nord1,
 };
 
 export const myDarkTheme = {
@@ -123,6 +152,11 @@ export const myDarkTheme = {
     ...common.heading,
     color: darkColors.primary,
   },
+  button: {
+    ...common.button,
+    backgroundColor: primaryColorDark,
+    shadowColor: primaryColorDark,
+  },
   colors: darkColors,
   backgroundColor: darkColors.background,
   color: darkColors.text,
@@ -131,9 +165,9 @@ export const myDarkTheme = {
     color: darkColors.primary,
   },
   iconColor: darkColors.text,
-  iconSize: 28,
+  iconSize: 24,
   activeTintColor: darkColors.primary,
-  inactiveTintColor: darkColors.text,
+  inactiveTintColor: darkColors.textMuted,
   input: {
     ...common.input,
     backgroundColor: darkColors.input,

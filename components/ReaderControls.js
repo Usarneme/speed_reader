@@ -4,9 +4,10 @@ import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../context/ThemeContext';
 import AnimatedPressable from './AnimatedPressable';
+import GlassView from './GlassView';
 
 export default function ReaderControls(props) {
-  const { theme } = useAppTheme();
+  const { theme, isDark } = useAppTheme();
   const { isPlaying, togglePlayPause, wpm, setWpm, setCurrentWordIndex, disableSpeedReader } = props;
 
   const handleMinus = () => {
@@ -17,16 +18,29 @@ export default function ReaderControls(props) {
     setWpm(prev => Math.min(900, prev + 10));
   };
 
+  const glassBackgroundColor = isDark
+    ? 'rgba(59, 66, 82, 0.85)'
+    : 'rgba(235, 233, 240, 0.9)';
+
   const styles = StyleSheet.create({
-    container: {
-      paddingVertical: 6,
-      paddingHorizontal: 4,
+    glassContainer: {
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border || '#4C566A',
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      marginVertical: 4,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 12,
+      elevation: 4,
     },
     primaryControlRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginVertical: 4,
+      marginVertical: 2,
     },
     playPauseButton: {
       ...theme.button,
@@ -34,10 +48,11 @@ export default function ReaderControls(props) {
       alignItems: 'center',
       justifyContent: 'center',
       height: 44,
-      paddingHorizontal: 24,
+      paddingHorizontal: 28,
       marginHorizontal: 0,
-      marginTop: 4,
+      marginTop: 2,
       marginBottom: 6,
+      borderRadius: 22,
     },
     playPauseText: {
       ...theme.buttonTitle,
@@ -59,16 +74,16 @@ export default function ReaderControls(props) {
     },
     slider: {
       flex: 1,
-      marginHorizontal: 6,
+      marginHorizontal: 8,
       height: 32,
     },
     wpmDisplay: {
       textAlign: 'center',
-      color: theme.colors.text || '#fff',
+      color: theme.colors.text || '#ECEFF4',
       fontSize: 14,
-      fontWeight: '600',
+      fontWeight: '700',
       marginBottom: 6,
-      opacity: 0.85,
+      opacity: 0.9,
     },
     secondaryActionsRow: {
       flexDirection: 'row',
@@ -79,23 +94,26 @@ export default function ReaderControls(props) {
       flex: 1,
       height: 36,
       marginHorizontal: 4,
-      marginTop: 0,
-      backgroundColor: 'transparent',
+      backgroundColor: isDark ? 'rgba(67, 76, 94, 0.5)' : 'rgba(216, 222, 233, 0.6)',
       borderWidth: 1,
-      borderColor: theme.colors.border || '#888',
-      borderRadius: 5,
+      borderColor: theme.colors.border || '#4C566A',
+      borderRadius: 8,
       alignItems: 'center',
       justifyContent: 'center',
     },
     secondaryButtonText: {
-      color: theme.colors.text || '#fff',
+      color: theme.colors.text || '#ECEFF4',
       fontSize: 13,
       fontWeight: '600',
     },
   });
 
   return (
-    <View style={styles.container}>
+    <GlassView
+      intensity={70}
+      tint={isDark ? 'dark' : 'light'}
+      style={[styles.glassContainer, { backgroundColor: glassBackgroundColor }]}
+    >
       {/* Primary Play/Pause Action */}
       <View style={styles.primaryControlRow}>
         <AnimatedPressable
@@ -126,7 +144,7 @@ export default function ReaderControls(props) {
           accessibilityHint="Decreases reading speed by 10 words per minute"
           aria-label="Decrease speed by 10 words per minute"
         >
-          <Ionicons name="remove-circle-outline" size={26} color={theme.colors.text || '#fff'} />
+          <Ionicons name="remove-circle-outline" size={26} color={theme.colors.text || '#ECEFF4'} />
         </AnimatedPressable>
 
         <Slider
@@ -135,9 +153,9 @@ export default function ReaderControls(props) {
           minimumValue={60}
           maximumValue={900}
           step={5}
-          minimumTrackTintColor={theme.colors.primary || '#007AFF'}
-          maximumTrackTintColor="#ccc"
-          thumbTintColor={theme.colors.primary || '#007AFF'}
+          minimumTrackTintColor={theme.colors.primary || '#88C0D0'}
+          maximumTrackTintColor={isDark ? '#4C566A' : '#D8DEE9'}
+          thumbTintColor={theme.colors.primary || '#88C0D0'}
           onValueChange={v => setWpm(Math.round(v))}
           accessibilityRole="adjustable"
           accessibilityLabel="Reading speed in words per minute"
@@ -156,7 +174,7 @@ export default function ReaderControls(props) {
           accessibilityHint="Increases reading speed by 10 words per minute"
           aria-label="Increase speed by 10 words per minute"
         >
-          <Ionicons name="add-circle-outline" size={26} color={theme.colors.text || '#fff'} />
+          <Ionicons name="add-circle-outline" size={26} color={theme.colors.text || '#ECEFF4'} />
         </AnimatedPressable>
       </View>
 
@@ -192,6 +210,6 @@ export default function ReaderControls(props) {
           <Text style={styles.secondaryButtonText}>Change Text</Text>
         </AnimatedPressable>
       </View>
-    </View>
+    </GlassView>
   );
 }

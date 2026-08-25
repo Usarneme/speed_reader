@@ -7,7 +7,7 @@ import FileSelect from '../components/FileSelect';
 import AnimatedPressable from '../components/AnimatedPressable';
 
 export default function HomeScreen() {
-  const { theme } = useAppTheme();
+  const { theme, isDark } = useAppTheme();
 
   const [inputShowing, showInput] = useState(true);
   const [readerShowing, showReader] = useState(false);
@@ -161,14 +161,13 @@ export default function HomeScreen() {
     },
     textInput: {
       flex: 1,
-      backgroundColor: '#ddd',
-      padding: 12,
-      borderWidth: 2,
-      borderColor: theme.colors.border,
-      borderStyle: 'solid',
+      backgroundColor: isDark ? '#1E293B' : '#F1F5F9',
+      padding: 14,
+      borderWidth: 1,
+      borderColor: theme.colors.border || '#334155',
+      borderRadius: 12,
       fontSize: 16,
-      color: '#000',
-      borderRadius: 6,
+      color: theme.colors.text || '#0F172A',
       marginBottom: 10,
     },
     readerContainer: {
@@ -176,38 +175,43 @@ export default function HomeScreen() {
       backgroundColor: theme.colors.card,
       alignItems: 'center',
       justifyContent: 'center',
-      borderWidth: 2,
-      borderColor: theme.colors.border,
-      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.border || '#334155',
+      borderRadius: 16,
       marginVertical: 4,
       padding: 16,
       position: 'relative',
       overflow: 'hidden',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.1,
+      shadowRadius: 16,
+      elevation: 5,
     },
     focalGuideTop: {
       position: 'absolute',
       top: '25%',
-      width: 40,
+      width: 44,
       height: 3,
-      backgroundColor: theme.colors.primary || '#788eec',
+      backgroundColor: theme.colors.primary || '#6366F1',
       borderRadius: 2,
-      opacity: 0.6,
+      opacity: 0.7,
     },
     focalGuideBottom: {
       position: 'absolute',
       bottom: '25%',
-      width: 40,
+      width: 44,
       height: 3,
-      backgroundColor: theme.colors.primary || '#788eec',
+      backgroundColor: theme.colors.primary || '#6366F1',
       borderRadius: 2,
-      opacity: 0.6,
+      opacity: 0.7,
     },
     readerText: {
-      fontSize: 58,
+      fontSize: 60,
       fontWeight: '900',
-      color: theme.colors.text || '#000',
+      color: theme.colors.text || '#F8FAFC',
       textAlign: 'center',
-      letterSpacing: 0.5,
+      letterSpacing: -0.5,
     },
     progressBarContainer: {
       position: 'absolute',
@@ -215,25 +219,25 @@ export default function HomeScreen() {
       left: 0,
       right: 0,
       height: 4,
-      backgroundColor: 'rgba(0,0,0,0.1)',
+      backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
     },
     progressBarFill: {
       height: '100%',
-      backgroundColor: theme.colors.primary || '#788eec',
+      backgroundColor: theme.colors.primary || '#6366F1',
     },
     progressText: {
       position: 'absolute',
-      bottom: 8,
+      bottom: 10,
       fontSize: 13,
       fontWeight: '600',
-      color: theme.colors.text || '#666',
-      opacity: 0.75,
+      color: theme.colors.textMuted || '#94A3B8',
     },
     divider: {
       width: '100%',
       textAlign: 'center',
-      color: theme.colors.text || '#000',
-      padding: 4,
+      color: theme.colors.textMuted || '#64748B',
+      padding: 6,
+      fontWeight: '600',
     },
   });
 
@@ -247,7 +251,7 @@ export default function HomeScreen() {
           <TextInput
             style={styles.textInput}
             placeholder="Welcome to SpdRdr the speed reader app! Paste or select text to speed read it!"
-            placeholderTextColor="#777"
+            placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
             onChangeText={t => changeText(t)}
             value={text}
             underlineColorAndroid="transparent"
