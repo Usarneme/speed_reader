@@ -1,47 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppTheme } from '../context/ThemeContext';
+import { parseFileToText } from '../utils/fileParsers';
 
 export default function FileSelectWeb(props) {
   const { theme } = useAppTheme();
+  const [loading, setLoading] = useState(false);
 
-  const handleFile = event => {
-    const file = event.target.files[0]
-    console.log(file)
-    const isPdf = file.type === 'application/pdf'
-    const reader = new FileReader()
-    reader.onload = () => {
-      const fileData = reader.result
-      if (isPdf) {
-        console.log('PARSED PDF FILE')
-        // const dataArr = new Uint16Array(fileData)
-        // console.log('got data array', dataArr)
-        // const parsedJson = JSON.stringify(dataArr, null, ' ')
-        // console.log('got parsed json', parsedJson)
-        // const texted = String.fromCharCode.apply(null, new Uint16Array(fileData))
-        // console.log('got text', texted)
-      } else {
-        console.log("PARSED TEXT FILE")
-        props.addTextFromFile(fileData)
-        console.log(fileData)
-      }
-      console.log("END OF FILE")
+  const handleFile = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    try {
+      console.log('Processing web file upload:', file.name, file.type);
+      const extractedText = await parseFileToText(file, file.name);
+      console.log('Finished parsing web file, text length:', extractedText.length);
+      props.addTextFromFile(extractedText);
+    } catch (err) {
+      console.error('Error reading file on web:', err);
+    } finally {
+      setLoading(false);
     }
-    if (isPdf) {
-      reader.readAsArrayBuffer(file)
-    } else {
-      reader.readAsText(file)
-    }
-  }
+  };
 
   const styles = {
-    inputContainer: {
-      height: '100%',
-    },
     input: {
       opacity: 0,
       position: 'absolute',
       zIndex: -1,
-      display: 'none'
+      display: 'none',
     },
     label: {
       cursor: 'pointer',
@@ -54,13 +41,24 @@ export default function FileSelectWeb(props) {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       marginTop: 0,
       padding: 0,
-    }
-  }
+      opacity: loading ? 0.7 : 1,
+    },
+  };
 
   return (
     <>
-      <label htmlFor='file' style={{...theme.button, ...theme.buttonTitle, ...styles.label}}>Select Text File</label>
-      <input type='file' style={{...styles.input}} name='file' id='file' onChange={e => handleFile(e)} />
+      <label htmlFor="file" style={{ ...theme.button, ...theme.buttonTitle, ...styles.label }}>
+        {loading ? 'Processing Document...' : 'Select File (.txt, .pdf, .epub, .rtf)'}
+      </label>
+      <input
+        type="file"
+        style={{ ...styles.input }}
+        name="file"
+        id="file"
+        accept=".txt,.pdf,.epub,.rtf,text/plain,application/pdf,application/epub+zip,application/rtf,text/rtf"
+        onChange={(e) => handleFile(e)}
+        disabled={loading}
+      />
     </>
-  )
+  );
 }

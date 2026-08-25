@@ -2,7 +2,7 @@
   "expo": {
     "name": "SpdRdr",
     "slug": "SpdRdr",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/Miami_potato_square.png",
     "scheme": "myapp",

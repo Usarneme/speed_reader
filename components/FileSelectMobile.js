@@ -1,47 +1,63 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import { Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAppTheme } from '../context/ThemeContext';
+import { parseFileToText } from '../utils/fileParsers';
 
 export default function FileSelectMobile(props) {
   const { theme } = useAppTheme();
+  const [loading, setLoading] = useState(false);
 
   const getLocalFile = async () => {
-    console.log('get local file clicked')
+    console.log('get local file clicked');
     try {
-      const chosenFile = await DocumentPicker.getDocumentAsync()
-      if (!chosenFile || chosenFile.type !== 'success') {
-        console.log('no file chosen')
-      } else {
-        console.log('picked file:', chosenFile)
-        console.log('file uri starts with file/ ?', chosenFile.uri.substring(0,5))
-        if (chosenFile.uri.substring(0,4) !== 'file') {
-          await readFileContent('file:' + chosenFile.uri)
-        } else {
-          await readFileContent(chosenFile.uri)
-        }
-      }
-    } catch (err) {
-      console.log("ERROR GETTING FILE", err)
-    }
-  }
+      const chosenFile = await DocumentPicker.getDocumentAsync({
+        type: ['text/plain', 'application/pdf', 'application/rtf', 'text/rtf', 'application/epub+zip', '*/*'],
+        copyToCacheDirectory: true,
+      });
 
-  const readFileContent = async (file) => {
-    console.log('reading file from ',file)
-    if (!file) return
-    try {
-      const res = await FileSystem.readAsStringAsync(file)
-      console.log(`finished reading file\n\n CONTENT: ${res}\n\n`)
-      props.addTextFromFile(res)
+      if (!chosenFile || chosenFile.canceled || chosenFile.type === 'cancel') {
+        console.log('no file chosen');
+        return;
+      }
+
+      // Handle Expo SDK 50+ assets array or legacy object format
+      const asset = chosenFile.assets ? chosenFile.assets[0] : chosenFile;
+      let uri = asset.uri;
+      const name = asset.name || 'document.txt';
+
+      if (uri && uri.substring(0, 4) !== 'file' && uri.substring(0, 4) !== 'http') {
+        uri = 'file:' + uri;
+      }
+
+      await readFileContent(uri, name);
     } catch (err) {
-      console.log("ERROR reading file", err)
+      console.log('ERROR GETTING FILE', err);
     }
-  }
+  };
+
+  const readFileContent = async (fileUri, fileName) => {
+    console.log('reading file from ', fileUri, 'name:', fileName);
+    if (!fileUri) return;
+    setLoading(true);
+    try {
+      const extractedText = await parseFileToText(fileUri, fileName);
+      console.log(`finished reading file, length: ${extractedText.length}`);
+      props.addTextFromFile(extractedText);
+    } catch (err) {
+      console.log('ERROR reading file', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <TouchableOpacity onPress={getLocalFile} style={theme.button} >
-      <Text style={theme.buttonTitle}>Select a text file to speed read</Text>
+    <TouchableOpacity onPress={getLocalFile} style={theme.button} disabled={loading}>
+      {loading ? (
+        <ActivityIndicator color="#fff" />
+      ) : (
+        <Text style={theme.buttonTitle}>Select a file to speed read (.txt, .pdf, .epub, .rtf)</Text>
+      )}
     </TouchableOpacity>
-  )
+  );
 }
