@@ -1,11 +1,12 @@
 import * as FileSystem from 'expo-file-system';
 import JSZip from 'jszip';
 import { Platform } from 'react-native';
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js';
+import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
 
-// Configure pdfjs worker if available
+// Configure pdfjs worker to silence warning and handle inline execution
 if (pdfjsLib && pdfjsLib.GlobalWorkerOptions) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 }
 
 /**
@@ -49,6 +50,39 @@ async function getFileText(fileInput) {
 }
 
 /**
+ * Helper to strip HTML / XML markup tags from HTML documents
+ */
+export function stripHtml(htmlContent) {
+  return htmlContent
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Helper to strip Markdown formatting syntax (#, **, *, `, >) for clean speed reading
+ */
+export function stripMarkdown(mdText) {
+  return mdText
+    .replace(/^#+\s+/gm, '')
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/\[([^\]]+)\]\(.*?\)/g, '$1')
+    .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1')
+    .replace(/^\s*>+\s+/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
  * Extract plain text from a PDF file
  */
 export async function parsePdf(fileInput) {
@@ -72,6 +106,55 @@ export async function parsePdf(fileInput) {
 }
 
 /**
+ * Extract plain text from a Microsoft Word .docx file
+ */
+export async function parseDocx(fileInput) {
+  try {
+    const bytes = await getFileBytes(fileInput);
+    const zip = await JSZip.loadAsync(bytes);
+    const docXmlFile = zip.file('word/document.xml');
+
+    if (!docXmlFile) {
+      throw new Error('Not a valid .docx structure');
+    }
+
+    const xmlText = await docXmlFile.async('text');
+    const textMatches = xmlText.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g) || [];
+    const plainText = textMatches
+      .map(tag => tag.replace(/<[^>]+>/g, ''))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return plainText || stripHtml(xmlText);
+  } catch (err) {
+    console.error('Error parsing .docx file:', err);
+    throw new Error('Failed to extract text from .docx file.');
+  }
+}
+
+/**
+ * Extract plain text from an OpenDocument .odt file
+ */
+export async function parseOdt(fileInput) {
+  try {
+    const bytes = await getFileBytes(fileInput);
+    const zip = await JSZip.loadAsync(bytes);
+    const contentXmlFile = zip.file('content.xml');
+
+    if (!contentXmlFile) {
+      throw new Error('Not a valid .odt structure');
+    }
+
+    const xmlText = await contentXmlFile.async('text');
+    return stripHtml(xmlText);
+  } catch (err) {
+    console.error('Error parsing .odt file:', err);
+    throw new Error('Failed to extract text from .odt file.');
+  }
+}
+
+/**
  * Extract plain text from an EPUB file
  */
 export async function parseEpub(fileInput) {
@@ -89,17 +172,7 @@ export async function parseEpub(fileInput) {
         !zip.files[filename].dir
       ) {
         const htmlContent = await zip.files[filename].async('text');
-        const cleanText = htmlContent
-          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-          .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-          .replace(/<[^>]+>/g, ' ')
-          .replace(/&nbsp;/gi, ' ')
-          .replace(/&amp;/gi, '&')
-          .replace(/&lt;/gi, '<')
-          .replace(/&gt;/gi, '>')
-          .replace(/&quot;/gi, '"')
-          .replace(/\s+/g, ' ')
-          .trim();
+        const cleanText = stripHtml(htmlContent);
 
         if (cleanText.length > 0) {
           fullText += cleanText + '\n\n';
@@ -138,19 +211,100 @@ export async function parseRtf(fileInput) {
 }
 
 /**
- * Main router function: accepts file URI or Web File/Blob object
+ * Main router function: auto-detects file type by magic byte header & filename extension
  */
 export async function parseFileToText(fileInput, fileName = '') {
-  const name = typeof fileInput === 'object' && fileInput?.name ? fileInput.name : fileName;
-  const lowerName = name.toLowerCase();
+  try {
+    const bytes = await getFileBytes(fileInput);
 
-  if (lowerName.endsWith('.pdf')) {
-    return await parsePdf(fileInput);
-  } else if (lowerName.endsWith('.epub')) {
-    return await parseEpub(fileInput);
-  } else if (lowerName.endsWith('.rtf')) {
-    return await parseRtf(fileInput);
-  } else {
+    // 1. Check Magic Byte Signatures:
+    // PDF Magic Number: %PDF (0x25 0x50 0x44 0x46)
+    const isPdfHeader =
+      bytes.length >= 4 &&
+      bytes[0] === 0x25 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x44 &&
+      bytes[3] === 0x46;
+
+    // ZIP Magic Number: PK\x03\x04 (0x50 0x4B 0x03 0x04)
+    const isZipHeader =
+      bytes.length >= 4 &&
+      bytes[0] === 0x50 &&
+      bytes[1] === 0x4b &&
+      bytes[2] === 0x03 &&
+      bytes[3] === 0x04;
+
+    if (isPdfHeader) {
+      console.log('Auto-detected PDF file by magic header signature');
+      return await parsePdf(fileInput);
+    }
+
+    if (isZipHeader) {
+      // Differentiate .docx, .odt, and .epub ZIP archives
+      try {
+        const zip = await JSZip.loadAsync(bytes);
+        if (zip.file('word/document.xml')) {
+          console.log('Auto-detected Microsoft Word .docx file by zip contents');
+          return await parseDocx(fileInput);
+        }
+        if (zip.file('content.xml')) {
+          console.log('Auto-detected OpenDocument .odt file by zip contents');
+          return await parseOdt(fileInput);
+        }
+      } catch (zipErr) {
+        console.warn('Failed zip structure check:', zipErr);
+      }
+
+      console.log('Auto-detected EPUB/ZIP file by magic header signature');
+      return await parseEpub(fileInput);
+    }
+
+    // 2. Check Text-based Signatures (RTF / HTML / XML)
+    const textHeader = String.fromCharCode.apply(null, Array.from(bytes.slice(0, 512))).trim();
+
+    if (textHeader.startsWith('{\\rtf')) {
+      console.log('Auto-detected RTF file by magic text header');
+      return await parseRtf(fileInput);
+    }
+
+    const lowerHeader = textHeader.toLowerCase();
+    if (
+      lowerHeader.startsWith('<!doctype html') ||
+      lowerHeader.startsWith('<html') ||
+      lowerHeader.startsWith('<?xml') ||
+      lowerHeader.includes('<body') ||
+      lowerHeader.includes('<head')
+    ) {
+      console.log('Auto-detected HTML/XML file by text header');
+      const rawText = await getFileText(fileInput);
+      return stripHtml(rawText);
+    }
+
+    // 3. Fallback to extension check if magic headers were neutral
+    const name = typeof fileInput === 'object' && fileInput?.name ? fileInput.name : fileName;
+    const lowerName = name.toLowerCase();
+
+    if (lowerName.endsWith('.pdf')) {
+      return await parsePdf(fileInput);
+    } else if (lowerName.endsWith('.docx')) {
+      return await parseDocx(fileInput);
+    } else if (lowerName.endsWith('.odt')) {
+      return await parseOdt(fileInput);
+    } else if (lowerName.endsWith('.epub')) {
+      return await parseEpub(fileInput);
+    } else if (lowerName.endsWith('.rtf')) {
+      return await parseRtf(fileInput);
+    } else if (lowerName.endsWith('.md') || lowerName.endsWith('.markdown')) {
+      const rawText = await getFileText(fileInput);
+      return stripMarkdown(rawText);
+    } else if (lowerName.endsWith('.html') || lowerName.endsWith('.htm')) {
+      const rawText = await getFileText(fileInput);
+      return stripHtml(rawText);
+    } else {
+      return await getFileText(fileInput);
+    }
+  } catch (err) {
+    console.warn('Magic signature check fallback, reading as plain text:', err);
     return await getFileText(fileInput);
   }
 }

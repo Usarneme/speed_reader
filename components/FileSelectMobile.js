@@ -12,7 +12,18 @@ export default function FileSelectMobile(props) {
     console.log('get local file clicked');
     try {
       const chosenFile = await DocumentPicker.getDocumentAsync({
-        type: ['text/plain', 'application/pdf', 'application/rtf', 'text/rtf', 'application/epub+zip', '*/*'],
+        type: [
+          'text/plain',
+          'application/pdf',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/msword',
+          'application/vnd.oasis.opendocument.text',
+          'application/rtf',
+          'text/rtf',
+          'application/epub+zip',
+          'text/markdown',
+          '*/*',
+        ],
         copyToCacheDirectory: true,
       });
 
@@ -21,7 +32,6 @@ export default function FileSelectMobile(props) {
         return;
       }
 
-      // Handle Expo SDK 50+ assets array or legacy object format
       const asset = chosenFile.assets ? chosenFile.assets[0] : chosenFile;
       let uri = asset.uri;
       const name = asset.name || 'document.txt';
@@ -56,7 +66,7 @@ export default function FileSelectMobile(props) {
       {loading ? (
         <ActivityIndicator color="#fff" />
       ) : (
-        <Text style={theme.buttonTitle}>Select a file to speed read (.txt, .pdf, .epub, .rtf)</Text>
+        <Text style={theme.buttonTitle}>Select File (.txt, .pdf, .docx, .epub, .md, .rtf)</Text>
       )}
     </TouchableOpacity>
   );

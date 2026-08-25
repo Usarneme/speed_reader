@@ -17,171 +17,250 @@ export default function HomeScreen() {
   const [textArray, setTextArray] = useState([]);
 
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [speedSetting, setSpeedSetting] = useState(500); // # of ms each word is displayed
+  const [wpm, setWpm] = useState(300); // Words Per Minute
+
   const intervalRef = useRef(null);
-  const indexRef = useRef(null);
-  indexRef.current = currentWordIndex;
 
-  // clear the interval when conditionally rendered components change
+  // Clean, leak-proof interval effect using functional state updates and exact array reference
   useEffect(() => {
-    clearInterval(indexRef.current)
-  }, [])
+    if (isPlaying && textArray.length > 0) {
+      const delayMs = Math.round(60000 / wpm);
 
-  const startSpeedReading = () => {
-    console.log('STARTING SPEED READER, pos, speed, indexRef', currentWordIndex, speedSetting, indexRef.current)
-    if (!currentWordIndex) setCurrentWordIndex(0);
-    // update rendered word after each tick at the set speed
-    intervalRef.current = setInterval(tick, speedSetting);
-  }
-
-  const tick = () => {
-    console.log("TICK, indexRef", indexRef.current)
-    if (indexRef.current >= textArray.length - 1) {
-      console.log('tick, calling pause');
-      pauseSpeedReading();
-      // TODO show words read count, update db, etc.
+      intervalRef.current = setInterval(() => {
+        setCurrentWordIndex(prevIndex => {
+          if (prevIndex >= textArray.length - 1) {
+            setPlaying(false);
+            return prevIndex;
+          }
+          return prevIndex + 1;
+        });
+      }, delayMs);
     } else {
-      setCurrentWordIndex(currentWordIndex => currentWordIndex + 1);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     }
-  }
 
-  const pauseSpeedReading = () => {
-    if (!isPlaying) return;
-    console.log('PAUSING SPEED READER, pos, speed, ref index', currentWordIndex, speedSetting, indexRef.current);
-    setPlaying(false);
-    clearInterval(intervalRef.current);
-  }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isPlaying, wpm, textArray]);
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      setPlaying(false);
+    } else {
+      if (currentWordIndex >= textArray.length - 1) {
+        setCurrentWordIndex(0);
+      }
+      setPlaying(true);
+    }
+  };
 
   const enableSpeedReader = () => {
-    if (isPlaying) return;
     setPlaying(true);
     showInput(false);
     showControls(true);
     showReader(true);
-  }
+  };
 
   const disableSpeedReader = () => {
-    // pause in case the user doesn't pause before changing views
-    clearInterval(intervalRef.current);
     setPlaying(false);
     showInput(true);
     showControls(false);
     showReader(false);
-  }
+  };
 
   const changeText = text => {
     setText(text);
     setCurrentWordIndex(0);
-  }
+  };
 
   const speedReadInputText = () => {
-    setTextArray(text.trim().split(/[ ,'--']+/));
-    enableSpeedReader()
-  }
+    if (!text.trim()) return;
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    setTextArray(words);
+    setCurrentWordIndex(0);
+    enableSpeedReader();
+  };
 
   const speedReadTextFromFile = text => {
-    changeText(text)
-    setTextArray(text.trim().split(/[ ,'--']+/));
-    enableSpeedReader()
-  }
+    changeText(text);
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    setTextArray(words);
+    setCurrentWordIndex(0);
+    enableSpeedReader();
+  };
 
   const clearText = () => {
-    setText('')
-    setTextArray([])
-  }
+    setText('');
+    setTextArray([]);
+    setCurrentWordIndex(0);
+  };
+
+  const totalWords = textArray.length;
+  const currentWordDisplay = totalWords > 0 ? currentWordIndex + 1 : 0;
+  const progressPercent = totalWords > 0 ? (currentWordDisplay / totalWords) * 100 : 0;
 
   const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 8,
+    },
     inputContainer: {
-      height: '100%',
+      flex: 1,
     },
     textInput: {
-      height: '50%',
-      overflow: 'scroll',
+      flex: 1,
       backgroundColor: '#ddd',
-      padding: 5,
+      padding: 12,
       borderWidth: 2,
       borderColor: theme.colors.border,
-      borderStyle: 'solid'
+      borderStyle: 'solid',
+      fontSize: 16,
+      color: '#000',
+      borderRadius: 6,
+      marginBottom: 10,
     },
     readerContainer: {
-      height: '50%',
+      flex: 1,
       backgroundColor: theme.colors.card,
-      color: theme.colors.text,
-      display: 'flex',
-      alignContent: 'center',
       alignItems: 'center',
       justifyContent: 'center',
       borderWidth: 2,
       borderColor: theme.colors.border,
-      borderStyle: 'solid'
+      borderRadius: 8,
+      marginVertical: 4,
+      padding: 16,
+      position: 'relative',
+      overflow: 'hidden',
+    },
+    focalGuideTop: {
+      position: 'absolute',
+      top: '25%',
+      width: 40,
+      height: 3,
+      backgroundColor: theme.colors.primary || '#788eec',
+      borderRadius: 2,
+      opacity: 0.6,
+    },
+    focalGuideBottom: {
+      position: 'absolute',
+      bottom: '25%',
+      width: 40,
+      height: 3,
+      backgroundColor: theme.colors.primary || '#788eec',
+      borderRadius: 2,
+      opacity: 0.6,
     },
     readerText: {
-      fontSize: 40,
-      color: theme.color
+      fontSize: 58,
+      fontWeight: '900',
+      color: theme.colors.text || '#000',
+      textAlign: 'center',
+      letterSpacing: 0.5,
+    },
+    progressBarContainer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: 4,
+      backgroundColor: 'rgba(0,0,0,0.1)',
+    },
+    progressBarFill: {
+      height: '100%',
+      backgroundColor: theme.colors.primary || '#788eec',
+    },
+    progressText: {
+      position: 'absolute',
+      bottom: 8,
+      fontSize: 13,
+      fontWeight: '600',
+      color: theme.colors.text || '#666',
+      opacity: 0.75,
     },
     divider: {
       width: '100%',
       textAlign: 'center',
-      color: theme.color,
+      color: theme.colors.text || '#000',
       padding: 4,
-    }
-  })
+    },
+  });
 
   return (
-    <View style={theme.container}>
-      { inputShowing &&
+    <View style={[theme.container, styles.container]}>
+      {inputShowing && (
         <View style={styles.inputContainer}>
           <Text style={theme.heading}>Enter Text</Text>
           <TextInput
             style={styles.textInput}
-            placeholder='Welcome to SpdRdr the speed reader app! This app allows you to speed up the rate at which you read text. Paste any text here to speed read it!'
+            placeholder="Welcome to SpdRdr the speed reader app! Paste or select text to speed read it!"
             placeholderTextColor="#777"
-            onChangeText={(t) => changeText(t)}
+            onChangeText={t => changeText(t)}
             value={text}
             underlineColorAndroid="transparent"
             autoCapitalize="none"
             multiline={true}
-            numberOfLines={15}
           />
-          { text.length > 1 &&
-            <View style={{ marginBottom: 18, }}>
-              <TouchableOpacity
-                style={theme.button}
-                onPress={clearText}>
+          {text.length > 0 && (
+            <View style={{ marginBottom: 8 }}>
+              <TouchableOpacity style={theme.button} onPress={clearText}>
                 <Text style={theme.buttonTitle}>Clear Text</Text>
               </TouchableOpacity>
             </View>
-          }
+          )}
           <TouchableOpacity
             style={theme.button}
             onPress={speedReadInputText}
-            disabled={text ? false : true}>
+            disabled={!text.trim()}
+          >
             <Text style={theme.buttonTitle}>Speed Read Input Text</Text>
           </TouchableOpacity>
           <Text style={styles.divider}>or</Text>
           <FileSelect addTextFromFile={speedReadTextFromFile} />
         </View>
-      }
-      { readerShowing &&
+      )}
+
+      {readerShowing && (
         <View style={styles.readerContainer}>
+          <View style={styles.focalGuideTop} />
           <Text
             style={styles.readerText}
             adjustsFontSizeToFit={true}
-            minimumFontScale={0.4}
-          >{ textArray[currentWordIndex] }</Text>
+            numberOfLines={1}
+            minimumFontScale={0.3}
+          >
+            {textArray[currentWordIndex] || ''}
+          </Text>
+          <View style={styles.focalGuideBottom} />
+
+          {/* Progress Bar & Counter */}
+          <View style={styles.progressBarContainer}>
+            <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
+          </View>
+          {totalWords > 0 && (
+            <Text style={styles.progressText}>
+              Word {currentWordDisplay} of {totalWords} ({Math.round(progressPercent)}%)
+            </Text>
+          )}
         </View>
-      }
-      { controlsShowing &&
+      )}
+
+      {controlsShowing && (
         <ReaderControls
-        disableSpeedReader={disableSpeedReader}
-          startSpeedReading={startSpeedReading}
-          pauseSpeedReading={pauseSpeedReading}
-          speedSetting={speedSetting}
-          setSpeedSetting={setSpeedSetting}
+          disableSpeedReader={disableSpeedReader}
+          isPlaying={isPlaying}
+          togglePlayPause={togglePlayPause}
+          wpm={wpm}
+          setWpm={setWpm}
           setCurrentWordIndex={setCurrentWordIndex}
-          // chunking? TODO
         />
-      }
+      )}
     </View>
-  )
+  );
 }

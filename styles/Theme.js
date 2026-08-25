@@ -1,9 +1,8 @@
 import { Platform } from 'react-native';
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
-// const SpaceMono = require('./../assets/fonts/SpaceMono-Regular.ttf')
 
 const buttonBackgroundColor = '#788eec';
-const cursorOnWeb = Platform.OS === 'ios' || Platform.OS === 'android' ? null : { cursor: 'pointer', }
+const cursorOnWeb = Platform.OS === 'ios' || Platform.OS === 'android' ? null : { cursor: 'pointer' };
 
 const common = {
   fontSize: 22,
@@ -22,7 +21,7 @@ const common = {
     textTransform: 'uppercase',
     color: 'white',
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: 'bold',
   },
   heading: {
     marginTop: 9,
@@ -30,9 +29,6 @@ const common = {
     fontWeight: 'bold',
     fontSize: 32,
     textAlign: 'center',
-    // borderBottomColor: '#111',
-    // borderBottomWidth: 4,
-    // borderStyle: 'solid',
   },
   input: {
     height: 48,
@@ -43,7 +39,7 @@ const common = {
     marginBottom: 10,
     marginLeft: 30,
     marginRight: 30,
-    paddingLeft: 16
+    paddingLeft: 16,
   },
   container: {
     margin: 5,
@@ -60,18 +56,18 @@ const common = {
   },
   footerView: {
     flex: 1,
-    alignItems: "center",
-    marginTop: 20
+    alignItems: 'center',
+    marginTop: 20,
   },
   footerText: {
     fontSize: 16,
   },
   footerLink: {
     color: buttonBackgroundColor,
-    fontWeight: "bold",
-    fontSize: 16
-  }
-}
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+};
 
 const lightColors = {
   ...DefaultTheme.colors,
@@ -81,8 +77,8 @@ const lightColors = {
   card: '#f7f7f7',
   primary: '#333',
   text: '#666',
-  input: '#fff'
-}
+  input: '#fff',
+};
 
 export const myLightTheme = {
   ...DefaultTheme,
@@ -96,7 +92,7 @@ export const myLightTheme = {
   color: lightColors.text,
   footerText: {
     ...common.footerText,
-    color: lightColors.primary
+    color: lightColors.primary,
   },
   iconColor: lightColors.text,
   iconSize: 28,
@@ -104,21 +100,21 @@ export const myLightTheme = {
   inactiveTintColor: lightColors.text,
   input: {
     ...common.input,
-    backgroundColor: lightColors.input
-  }
-}
+    backgroundColor: lightColors.input,
+  },
+};
 
 const darkColors = {
   ...DarkTheme.colors,
-  background: '#2e3440',    // lowest layer background
+  background: '#2e3440',
   border: '#111',
-  buttonColor: '#333444',   // button color, not as light to contrast with lighter dark button backgrounds
-  card: '#434c5e',          // higher layer background
-  notification: '#4c566a',  // highest layer background
-  primary: '#d7ddd8',       // headings text color, should be light to contrast with dark backgrounds
-  text: '#fafffb',          // lightest text color
+  buttonColor: '#333444',
+  card: '#434c5e',
+  notification: '#4c566a',
+  primary: '#d7ddd8',
+  text: '#fafffb',
   input: '#ddd',
-}
+};
 
 export const myDarkTheme = {
   ...DarkTheme,
@@ -132,7 +128,7 @@ export const myDarkTheme = {
   color: darkColors.text,
   footerText: {
     ...common.footerText,
-    color: darkColors.primary
+    color: darkColors.primary,
   },
   iconColor: darkColors.text,
   iconSize: 28,
@@ -140,6 +136,6 @@ export const myDarkTheme = {
   inactiveTintColor: darkColors.text,
   input: {
     ...common.input,
-    backgroundColor: darkColors.input
-  }
-}
+    backgroundColor: darkColors.input,
+  },
+};

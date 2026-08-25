@@ -48,14 +48,14 @@ export default function FileSelectWeb(props) {
   return (
     <>
       <label htmlFor="file" style={{ ...theme.button, ...theme.buttonTitle, ...styles.label }}>
-        {loading ? 'Processing Document...' : 'Select File (.txt, .pdf, .epub, .rtf)'}
+        {loading ? 'Processing Document...' : 'Select File (.txt, .pdf, .docx, .epub, .md, .rtf)'}
       </label>
       <input
         type="file"
         style={{ ...styles.input }}
         name="file"
         id="file"
-        accept=".txt,.pdf,.epub,.rtf,text/plain,application/pdf,application/epub+zip,application/rtf,text/rtf"
+        accept=".txt,.pdf,.docx,.odt,.epub,.md,.markdown,.rtf,.html,.htm,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/epub+zip,text/markdown"
         onChange={(e) => handleFile(e)}
         disabled={loading}
       />
