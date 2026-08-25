@@ -118,3 +118,7 @@ dist
 # generated native directories
 /android/
 /ios/
+
+*.pem
+*.jks
+credentials/
