@@ -2,7 +2,7 @@
   "expo": {
     "name": "SpdRdr",
     "slug": "SpdRdr",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/Miami_potato_square.png",
     "scheme": "myapp",
@@ -23,6 +23,7 @@
       "usesIcloudStorage": true
     },
     "android": {
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Miami_potato_square.png",
         "backgroundColor": "#eee"
