@@ -1,5 +1,7 @@
 import * as FileSystem from 'expo-file-system';
 import JSZip from 'jszip';
+import pako from 'pako';
+import { extractText as unpdfExtractText } from 'unpdf';
 import { Platform } from 'react-native';
 
 /**
@@ -46,7 +48,8 @@ async function getFileBytes(fileInput) {
     const buffer = await response.arrayBuffer();
     return new Uint8Array(buffer);
   } else {
-    const base64 = await FileSystem.readAsStringAsync(fileInput, {
+    const uri = typeof fileInput === 'string' ? fileInput : fileInput?.uri;
+    const base64 = await FileSystem.readAsStringAsync(uri, {
       encoding: FileSystem.EncodingType.Base64,
     });
     return base64ToUint8Array(base64);
@@ -64,7 +67,8 @@ async function getFileText(fileInput) {
     const response = await fetch(fileInput);
     return await response.text();
   } else {
-    return await FileSystem.readAsStringAsync(fileInput);
+    const uri = typeof fileInput === 'string' ? fileInput : fileInput?.uri;
+    return await FileSystem.readAsStringAsync(uri);
   }
 }
 
@@ -82,6 +86,7 @@ export function stripHtml(htmlContent) {
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -104,58 +109,216 @@ export function stripMarkdown(mdText) {
 }
 
 /**
- * Extract plain text from a PDF file using pure JS stream text extraction (DOM-free, Hermes safe)
+ * Helper to decode PDF string escapes and sanitize non-printable bytes
+ */
+function decodePdfString(pdfStr) {
+  if (!pdfStr) return '';
+  const decoded = pdfStr
+    .replace(/\\([()])/g, '$1')
+    .replace(/\\n/g, ' ')
+    .replace(/\\r/g, ' ')
+    .replace(/\\t/g, ' ')
+    .replace(/\\(\d{3})/g, (m, oct) => {
+      const code = parseInt(oct, 8);
+      return code >= 32 && code <= 126 ? String.fromCharCode(code) : ' ';
+    });
+
+  let clean = '';
+  for (let i = 0; i < decoded.length; i++) {
+    const code = decoded.charCodeAt(i);
+    if (code >= 32 && code <= 126) {
+      clean += decoded[i];
+    } else if (code === 10 || code === 13 || code === 9) {
+      clean += ' ';
+    }
+  }
+  return clean;
+}
+
+/**
+ * Helper to parse PDF hex string literals (<48656c6c6f>) safely (handles 2-byte ASCII and 4-byte UTF-16BE)
+ */
+function parseHexPdfString(hex) {
+  if (!hex) return '';
+  let str = '';
+  let asciiCount = 0;
+  for (let i = 0; i < hex.length; i += 2) {
+    const code = parseInt(hex.substring(i, i + 2), 16);
+    if ((code >= 32 && code <= 126) || code === 10 || code === 13 || code === 9) {
+      asciiCount++;
+    }
+  }
+  if (asciiCount >= Math.floor(hex.length / 4)) {
+    for (let i = 0; i < hex.length; i += 2) {
+      const code = parseInt(hex.substring(i, i + 2), 16);
+      if (code >= 32 && code <= 126) str += String.fromCharCode(code);
+      else if (code === 10 || code === 13 || code === 9) str += ' ';
+    }
+  } else {
+    for (let i = 0; i < hex.length; i += 4) {
+      const code = parseInt(hex.substring(i, i + 4), 16);
+      if (code >= 32 && code <= 0xd7ff) str += String.fromCharCode(code);
+    }
+  }
+  return str;
+}
+
+/**
+ * Extract text from decompressed PDF stream content string
+ */
+function parsePdfStreamText(decompressedStr) {
+  let text = '';
+  // 1. Match Tj string literals: (Hello World) Tj or (Hello World) ' or (Hello World) "
+  const tjRegex = /\(([^()\\]*(?:\\.[^()\\]*)*)\)\s*(?:Tj|['"])/g;
+  let match;
+  while ((match = tjRegex.exec(decompressedStr)) !== null) {
+    if (match[1]) {
+      const decoded = decodePdfString(match[1]);
+      if (decoded.trim()) text += decoded.trim() + ' ';
+    }
+  }
+
+  // 2. Match TJ array literals: [(Hello) -10 (World) <48656c6c6f>] TJ
+  const tjArrayRegex = /\[\s*((?:\((?:[^()\\]*(?:\\.[^()\\]*)*)\)|<[0-9a-fA-F]*>|-?\d+(?:\.\d+)?|\s+)+)\]\s*TJ/g;
+  while ((match = tjArrayRegex.exec(decompressedStr)) !== null) {
+    const arrayContent = match[1];
+    const innerTjRegex = /\(([^()\\]*(?:\\.[^()\\]*)*)\)/g;
+    let innerMatch;
+    while ((innerMatch = innerTjRegex.exec(arrayContent)) !== null) {
+      if (innerMatch[1]) {
+        const decoded = decodePdfString(innerMatch[1]);
+        if (decoded.trim()) text += decoded.trim() + ' ';
+      }
+    }
+    const innerHexRegex = /<([0-9a-fA-F]+)>/g;
+    let hexMatch;
+    while ((hexMatch = innerHexRegex.exec(arrayContent)) !== null) {
+      const hex = hexMatch[1];
+      const parsedHex = parseHexPdfString(hex);
+      if (parsedHex.trim()) text += parsedHex.trim() + ' ';
+    }
+  }
+
+  // 3. Match standalone hex strings: <48656c6c6f> Tj
+  const hexTjRegex = /<([0-9a-fA-F]+)>\s*(?:Tj|['"])/g;
+  while ((match = hexTjRegex.exec(decompressedStr)) !== null) {
+    if (match[1]) {
+      const parsedHex = parseHexPdfString(match[1]);
+      if (parsedHex.trim()) text += parsedHex.trim() + ' ';
+    }
+  }
+
+  return text;
+}
+
+/**
+ * Extract plain text from a PDF file using unpdf (Hermes & Web safe, 100% clean text output)
  */
 export async function parsePdf(fileInput) {
   try {
     const bytes = await getFileBytes(fileInput);
-    let pdfString = '';
-    const chunkSize = 8192;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      const sub = bytes.subarray(i, i + chunkSize);
-      pdfString += String.fromCharCode.apply(null, sub);
-    }
 
-    const textMatches = [];
-    const tjRegex = /\(([^()\\]*(?:\\.[^()\\]*)*)\)\s*Tj/g;
-    let match;
-    while ((match = tjRegex.exec(pdfString)) !== null) {
-      if (match[1]) {
-        textMatches.push(match[1].replace(/\\([()])/g, '$1').replace(/\\n/g, ' '));
+    // Primary: Use industry-standard unpdf engine for page & font CMap text extraction
+    try {
+      const { text } = await unpdfExtractText(bytes);
+      let combinedText = '';
+      if (Array.isArray(text)) {
+        combinedText = text.join(' ');
+      } else if (typeof text === 'string') {
+        combinedText = text;
       }
+
+      const cleaned = combinedText
+        .replace(/[^\x20-\x7E\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (cleaned.length > 0) {
+        return cleaned;
+      }
+    } catch (unpdfErr) {
+      console.warn('unpdf extraction notice, trying stream fallback:', unpdfErr);
     }
 
-    const tjArrayRegex = /\[\s*((?:\((?:[^()\\]*(?:\\.[^()\\]*)*)\)|-?\d+(?:\.\d+)?|\s+)+)\]\s*TJ/g;
-    while ((match = tjArrayRegex.exec(pdfString)) !== null) {
-      const arrayContent = match[1];
-      const innerTjRegex = /\(([^()\\]*(?:\\.[^()\\]*)*)\)/g;
-      let innerMatch;
-      while ((innerMatch = innerTjRegex.exec(arrayContent)) !== null) {
-        if (innerMatch[1]) {
-          textMatches.push(innerMatch[1].replace(/\\([()])/g, '$1').replace(/\\n/g, ' '));
+    // Secondary Fallback: Stream FlateDecode inspection
+    let extractedText = '';
+    let i = 0;
+    while (i < bytes.length - 6) {
+      if (
+        bytes[i] === 115 && // 's'
+        bytes[i + 1] === 116 && // 't'
+        bytes[i + 2] === 114 && // 'r'
+        bytes[i + 3] === 101 && // 'e'
+        bytes[i + 4] === 97 && // 'a'
+        bytes[i + 5] === 109 // 'm'
+      ) {
+        let startPos = i + 6;
+        if (bytes[startPos] === 13) startPos++;
+        if (bytes[startPos] === 10) startPos++;
+
+        let endPos = startPos;
+        while (endPos < bytes.length - 9) {
+          if (
+            bytes[endPos] === 101 &&
+            bytes[endPos + 1] === 110 &&
+            bytes[endPos + 2] === 100 &&
+            bytes[endPos + 3] === 115 &&
+            bytes[endPos + 4] === 116 &&
+            bytes[endPos + 5] === 114 &&
+            bytes[endPos + 6] === 101 &&
+            bytes[endPos + 7] === 97 &&
+            bytes[endPos + 8] === 109
+          ) {
+            break;
+          }
+          endPos++;
         }
+
+        if (endPos > startPos) {
+          let rawEnd = endPos;
+          if (bytes[rawEnd - 1] === 10) rawEnd--;
+          if (bytes[rawEnd - 1] === 13) rawEnd--;
+
+          const streamBytes = bytes.subarray(startPos, rawEnd);
+          let decompressedStr = '';
+
+          try {
+            const decompressed = pako.inflate(streamBytes);
+            for (let k = 0; k < decompressed.length; k += 8192) {
+              const sub = decompressed.subarray(k, k + 8192);
+              decompressedStr += String.fromCharCode.apply(null, sub);
+            }
+          } catch (inflateErr) {
+            for (let k = 0; k < streamBytes.length; k += 8192) {
+              const sub = streamBytes.subarray(k, k + 8192);
+              decompressedStr += String.fromCharCode.apply(null, sub);
+            }
+          }
+
+          if (decompressedStr) {
+            extractedText += parsePdfStreamText(decompressedStr) + ' ';
+          }
+        }
+
+        i = endPos + 9;
+      } else {
+        i++;
       }
     }
 
-    const extracted = textMatches.join(' ').replace(/\s+/g, ' ').trim();
-    if (extracted.length > 0) {
-      return extracted;
+    const cleanedFallback = extractedText
+      .replace(/[^\x20-\x7E\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (cleanedFallback.length > 0) {
+      return cleanedFallback;
     }
 
-    // Fallback text extraction for non-compressed text objects
-    const rawWords = pdfString.match(/[A-Za-z0-9,.!?'" -]{4,}/g) || [];
-    const filtered = rawWords.filter(
-      w =>
-        !w.startsWith('obj') &&
-        !w.startsWith('endobj') &&
-        !w.startsWith('stream') &&
-        !w.startsWith('endstream') &&
-        !w.startsWith('xref')
-    );
-    return filtered.join(' ').trim();
+    return 'No readable text content could be extracted from this PDF file.';
   } catch (err) {
     console.error('Error parsing PDF file:', err);
-    return await getFileText(fileInput);
+    return 'Unable to read text from this PDF file.';
   }
 }
 
@@ -173,17 +336,25 @@ export async function parseDocx(fileInput) {
     }
 
     const xmlText = await docXmlFile.async('text');
-    const textMatches = xmlText.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g) || [];
-    const plainText = textMatches
-      .map(tag => tag.replace(/<[^>]+>/g, ''))
-      .join(' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    // Extract paragraph blocks (<w:p>) to preserve word/sentence spacing
+    const paragraphMatches = xmlText.match(/<w:p[^>]*>[\s\S]*?<\/w:p>/g) || [xmlText];
+    let fullText = '';
 
-    return plainText || stripHtml(xmlText);
+    for (const pXml of paragraphMatches) {
+      const textMatches = pXml.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g) || [];
+      const paragraphText = textMatches
+        .map(tag => tag.replace(/<[^>]+>/g, ''))
+        .join('');
+      if (paragraphText.trim()) {
+        fullText += paragraphText.trim() + ' ';
+      }
+    }
+
+    const cleaned = fullText.replace(/\s+/g, ' ').trim();
+    return cleaned || stripHtml(xmlText);
   } catch (err) {
     console.error('Error parsing .docx file:', err);
-    return await getFileText(fileInput);
+    return 'Unable to read text from this .docx file.';
   }
 }
 
@@ -204,7 +375,7 @@ export async function parseOdt(fileInput) {
     return stripHtml(xmlText);
   } catch (err) {
     console.error('Error parsing .odt file:', err);
-    return await getFileText(fileInput);
+    return 'Unable to read text from this .odt file.';
   }
 }
 
@@ -229,14 +400,14 @@ export async function parseEpub(fileInput) {
         const cleanText = stripHtml(htmlContent);
 
         if (cleanText.length > 0) {
-          fullText += cleanText + '\n\n';
+          fullText += cleanText + ' ';
         }
       }
     }
-    return fullText.trim();
+    return fullText.replace(/\s+/g, ' ').trim();
   } catch (err) {
     console.error('Error parsing EPUB file:', err);
-    return await getFileText(fileInput);
+    return 'Unable to read text from this EPUB file.';
   }
 }
 
@@ -251,6 +422,7 @@ export async function parseRtf(fileInput) {
       .replace(/{\\colortbl[\s\S]*?}/gi, '')
       .replace(/{\\stylesheet[\s\S]*?}/gi, '')
       .replace(/{\\info[\s\S]*?}/gi, '')
+      .replace(/\\u(\d{1,5})\??/gi, (match, code) => String.fromCharCode(parseInt(code, 10)))
       .replace(/\\([a-z]{1,32})(-?\d{1,10})?[ ]?/gi, ' ')
       .replace(/\\'([0-9a-f]{2})/gi, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
       .replace(/[{}]/g, '')
@@ -260,7 +432,7 @@ export async function parseRtf(fileInput) {
     return cleanText;
   } catch (err) {
     console.error('Error parsing RTF file:', err);
-    return await getFileText(fileInput);
+    return 'Unable to read text from this RTF file.';
   }
 }
 
