@@ -1,12 +1,36 @@
 import * as FileSystem from 'expo-file-system';
 import JSZip from 'jszip';
 import { Platform } from 'react-native';
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js';
-import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
 
-// Configure pdfjs worker to silence warning and handle inline execution
-if (pdfjsLib && pdfjsLib.GlobalWorkerOptions) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+/**
+ * Platform-safe Base64 to Uint8Array decoder (pure JS, safe for Hermes & Web without DOM/atob)
+ */
+function base64ToUint8Array(base64) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const lookup = new Uint8Array(256);
+  for (let i = 0; i < chars.length; i++) {
+    lookup[chars.charCodeAt(i)] = i;
+  }
+  let bufferLength = base64.length * 0.75;
+  const len = base64.length;
+  if (base64[len - 1] === '=') bufferLength--;
+  if (base64[len - 2] === '=') bufferLength--;
+  const arrayBuffer = new Uint8Array(bufferLength);
+  let p = 0;
+  for (let i = 0; i < len; i += 4) {
+    const encoded1 = lookup[base64.charCodeAt(i)];
+    const encoded2 = lookup[base64.charCodeAt(i + 1)];
+    const encoded3 = lookup[base64.charCodeAt(i + 2)];
+    const encoded4 = lookup[base64.charCodeAt(i + 3)];
+    arrayBuffer[p++] = (encoded1 << 2) | (encoded2 >> 4);
+    if (encoded3 !== 64 && base64[i + 2] !== '=') {
+      arrayBuffer[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+    }
+    if (encoded4 !== 64 && base64[i + 3] !== '=') {
+      arrayBuffer[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+    }
+  }
+  return arrayBuffer;
 }
 
 /**
@@ -25,12 +49,7 @@ async function getFileBytes(fileInput) {
     const base64 = await FileSystem.readAsStringAsync(fileInput, {
       encoding: FileSystem.EncodingType.Base64,
     });
-    const binaryString = atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
+    return base64ToUint8Array(base64);
   }
 }
 
@@ -53,6 +72,7 @@ async function getFileText(fileInput) {
  * Helper to strip HTML / XML markup tags from HTML documents
  */
 export function stripHtml(htmlContent) {
+  if (!htmlContent) return '';
   return htmlContent
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
@@ -70,6 +90,7 @@ export function stripHtml(htmlContent) {
  * Helper to strip Markdown formatting syntax (#, **, *, `, >) for clean speed reading
  */
 export function stripMarkdown(mdText) {
+  if (!mdText) return '';
   return mdText
     .replace(/^#+\s+/gm, '')
     .replace(/```[\s\S]*?```/g, '')
@@ -83,25 +104,58 @@ export function stripMarkdown(mdText) {
 }
 
 /**
- * Extract plain text from a PDF file
+ * Extract plain text from a PDF file using pure JS stream text extraction (DOM-free, Hermes safe)
  */
 export async function parsePdf(fileInput) {
   try {
-    const data = await getFileBytes(fileInput);
-    const loadingTask = pdfjsLib.getDocument({ data });
-    const pdfDocument = await loadingTask.promise;
-
-    let textContent = '';
-    for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {
-      const page = await pdfDocument.getPage(pageNum);
-      const content = await page.getTextContent();
-      const pageStrings = content.items.map(item => item.str);
-      textContent += pageStrings.join(' ') + '\n\n';
+    const bytes = await getFileBytes(fileInput);
+    let pdfString = '';
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const sub = bytes.subarray(i, i + chunkSize);
+      pdfString += String.fromCharCode.apply(null, sub);
     }
-    return textContent.trim();
+
+    const textMatches = [];
+    const tjRegex = /\(([^()\\]*(?:\\.[^()\\]*)*)\)\s*Tj/g;
+    let match;
+    while ((match = tjRegex.exec(pdfString)) !== null) {
+      if (match[1]) {
+        textMatches.push(match[1].replace(/\\([()])/g, '$1').replace(/\\n/g, ' '));
+      }
+    }
+
+    const tjArrayRegex = /\[\s*((?:\((?:[^()\\]*(?:\\.[^()\\]*)*)\)|-?\d+(?:\.\d+)?|\s+)+)\]\s*TJ/g;
+    while ((match = tjArrayRegex.exec(pdfString)) !== null) {
+      const arrayContent = match[1];
+      const innerTjRegex = /\(([^()\\]*(?:\\.[^()\\]*)*)\)/g;
+      let innerMatch;
+      while ((innerMatch = innerTjRegex.exec(arrayContent)) !== null) {
+        if (innerMatch[1]) {
+          textMatches.push(innerMatch[1].replace(/\\([()])/g, '$1').replace(/\\n/g, ' '));
+        }
+      }
+    }
+
+    const extracted = textMatches.join(' ').replace(/\s+/g, ' ').trim();
+    if (extracted.length > 0) {
+      return extracted;
+    }
+
+    // Fallback text extraction for non-compressed text objects
+    const rawWords = pdfString.match(/[A-Za-z0-9,.!?'" -]{4,}/g) || [];
+    const filtered = rawWords.filter(
+      w =>
+        !w.startsWith('obj') &&
+        !w.startsWith('endobj') &&
+        !w.startsWith('stream') &&
+        !w.startsWith('endstream') &&
+        !w.startsWith('xref')
+    );
+    return filtered.join(' ').trim();
   } catch (err) {
     console.error('Error parsing PDF file:', err);
-    throw new Error('Failed to extract text from PDF file.');
+    return await getFileText(fileInput);
   }
 }
 
@@ -129,7 +183,7 @@ export async function parseDocx(fileInput) {
     return plainText || stripHtml(xmlText);
   } catch (err) {
     console.error('Error parsing .docx file:', err);
-    throw new Error('Failed to extract text from .docx file.');
+    return await getFileText(fileInput);
   }
 }
 
@@ -150,7 +204,7 @@ export async function parseOdt(fileInput) {
     return stripHtml(xmlText);
   } catch (err) {
     console.error('Error parsing .odt file:', err);
-    throw new Error('Failed to extract text from .odt file.');
+    return await getFileText(fileInput);
   }
 }
 
@@ -182,7 +236,7 @@ export async function parseEpub(fileInput) {
     return fullText.trim();
   } catch (err) {
     console.error('Error parsing EPUB file:', err);
-    throw new Error('Failed to extract text from EPUB file.');
+    return await getFileText(fileInput);
   }
 }
 
@@ -206,7 +260,7 @@ export async function parseRtf(fileInput) {
     return cleanText;
   } catch (err) {
     console.error('Error parsing RTF file:', err);
-    throw new Error('Failed to extract text from RTF file.');
+    return await getFileText(fileInput);
   }
 }
 
@@ -240,7 +294,6 @@ export async function parseFileToText(fileInput, fileName = '') {
     }
 
     if (isZipHeader) {
-      // Differentiate .docx, .odt, and .epub ZIP archives
       try {
         const zip = await JSZip.loadAsync(bytes);
         if (zip.file('word/document.xml')) {

@@ -3,14 +3,14 @@
     "name": "SpdRdr",
     "slug": "SpdRdr",
     "version": "1.0.5",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/Miami_potato_square.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/Miami_potato.png",
       "resizeMode": "contain",
-      "backgroundColor": "#eee"
+      "backgroundColor": "#eeeeee"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,12 +23,10 @@
       "usesIcloudStorage": true
     },
     "android": {
-      "compileSdkVersion": 36,
-      "targetSdkVersion": 36,
       "versionCode": 10,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Miami_potato_square.png",
-        "backgroundColor": "#eee"
+        "backgroundColor": "#eeeeee"
       },
       "package": "com.usarneme.spdrdr"
     },

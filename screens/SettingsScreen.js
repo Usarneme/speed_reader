@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAppTheme } from '../context/ThemeContext';
 
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   keyText: {
     fontSize: 13,
     fontWeight: 'bold',
-    fontFamily: 'Platform.OS === "web" ? "monospace" : undefined',
+    fontFamily: Platform.OS === 'web' ? 'monospace' : undefined,
   },
   actionText: {
     fontSize: 14,
