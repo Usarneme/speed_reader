@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 
 import SpeedReaderScreen from './screens/SpeedReaderScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -14,10 +15,11 @@ import { ThemeProvider, useAppTheme } from './context/ThemeContext';
 const Tab = createBottomTabNavigator();
 
 function MainAppContent() {
-  const { theme } = useAppTheme();
+  const { theme, isDark } = useAppTheme();
 
   return (
     <View style={[styles.fullFlex, { backgroundColor: theme.colors.background }]}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <View style={styles.responsiveOuter}>
         <View style={styles.responsiveInner}>
           <NavigationContainer theme={theme}>
