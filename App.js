@@ -28,6 +28,24 @@ function MainAppContent() {
               screenOptions={{
                 tabBarActiveTintColor: theme.activeTintColor,
                 tabBarInactiveTintColor: theme.inactiveTintColor,
+                headerStatusBarHeight: 0,
+                headerTitleAlign: 'left',
+                headerStyle: {
+                  height: 36,
+                  backgroundColor: theme.colors.card,
+                  elevation: 0,
+                  shadowOpacity: 0,
+                  borderBottomWidth: 1,
+                  borderBottomColor: theme.colors.border || 'rgba(255,255,255,0.1)',
+                },
+                headerTitleStyle: {
+                  fontSize: 14,
+                  fontWeight: '700',
+                  color: theme.colors.text || '#FFFFFF',
+                },
+                headerTitleContainerStyle: {
+                  paddingLeft: 16,
+                },
               }}
             >
               <Tab.Screen

@@ -2,6 +2,7 @@ import React from 'react';
 import { useTheme } from '@react-navigation/native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../context/ThemeContext';
 import Logo from './Logo';
 import GlassView from './GlassView';
@@ -10,6 +11,7 @@ export default function Header() {
   const navTheme = useTheme();
   const colors = navTheme?.colors || {};
   const { themeMode, setThemeMode, isDark } = useAppTheme();
+  const insets = useSafeAreaInsets();
 
   const cycleTheme = () => {
     if (themeMode === 'system') setThemeMode('light');
@@ -34,7 +36,15 @@ export default function Header() {
     <GlassView
       intensity={60}
       tint={isDark ? 'dark' : 'light'}
-      style={[styles.outer, { backgroundColor: glassBackgroundColor, borderBottomColor: colors.border || '#4C566A' }]}
+      style={[
+        styles.outer,
+        {
+          paddingTop: insets.top,
+          height: 48 + insets.top,
+          backgroundColor: glassBackgroundColor,
+          borderBottomColor: colors.border || '#4C566A',
+        },
+      ]}
     >
       <View style={styles.inner}>
         <Text style={[styles.titleText, { color: colors.primary || '#5E81AC' }]}>SpdRdr</Text>

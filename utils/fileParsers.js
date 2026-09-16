@@ -1,33 +1,44 @@
-import * as FileSystem from 'expo-file-system';
+import { File as ExpoFile } from 'expo-file-system';
 import JSZip from 'jszip';
 import pako from 'pako';
 import { Platform } from 'react-native';
 
 /**
- * Platform-safe Base64 to Uint8Array decoder (pure JS, safe for Hermes & Web without DOM/atob)
+ * Platform-safe Base64 to Uint8Array decoder (pure JS, safe for Hermes & Web)
  */
 function base64ToUint8Array(base64) {
+  if (!base64) return new Uint8Array(0);
+  const cleanBase64 = base64.replace(/[\r\n\s]/g, '');
+  if (typeof atob !== 'undefined') {
+    const binaryString = atob(cleanBase64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   const lookup = new Uint8Array(256);
   for (let i = 0; i < chars.length; i++) {
     lookup[chars.charCodeAt(i)] = i;
   }
-  let bufferLength = base64.length * 0.75;
-  const len = base64.length;
-  if (base64[len - 1] === '=') bufferLength--;
-  if (base64[len - 2] === '=') bufferLength--;
+  let bufferLength = Math.floor(cleanBase64.length * 0.75);
+  const len = cleanBase64.length;
+  if (cleanBase64[len - 1] === '=') bufferLength--;
+  if (cleanBase64[len - 2] === '=') bufferLength--;
   const arrayBuffer = new Uint8Array(bufferLength);
   let p = 0;
   for (let i = 0; i < len; i += 4) {
-    const encoded1 = lookup[base64.charCodeAt(i)];
-    const encoded2 = lookup[base64.charCodeAt(i + 1)];
-    const encoded3 = lookup[base64.charCodeAt(i + 2)];
-    const encoded4 = lookup[base64.charCodeAt(i + 3)];
+    const encoded1 = lookup[cleanBase64.charCodeAt(i)];
+    const encoded2 = lookup[cleanBase64.charCodeAt(i + 1)];
+    const encoded3 = lookup[cleanBase64.charCodeAt(i + 2)];
+    const encoded4 = lookup[cleanBase64.charCodeAt(i + 3)];
     arrayBuffer[p++] = (encoded1 << 2) | (encoded2 >> 4);
-    if (encoded3 !== 64 && base64[i + 2] !== '=') {
+    if (encoded3 !== 0 && cleanBase64[i + 2] !== '=') {
       arrayBuffer[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
     }
-    if (encoded4 !== 64 && base64[i + 3] !== '=') {
+    if (encoded4 !== 0 && cleanBase64[i + 3] !== '=') {
       arrayBuffer[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
     }
   }
@@ -35,7 +46,27 @@ function base64ToUint8Array(base64) {
 }
 
 /**
- * Get Uint8Array byte buffer from file input (supports Web File/Blob objects, blob: URIs, and native file URIs)
+ * Convert Uint8Array to UTF-8 decoded string safely without stack overflow
+ */
+function uint8ArrayToString(bytes) {
+  if (!bytes || bytes.length === 0) return '';
+  if (typeof TextDecoder !== 'undefined') {
+    try {
+      return new TextDecoder('utf-8').decode(bytes);
+    } catch (e) {
+      // Fallback if encoding error
+    }
+  }
+  let str = '';
+  for (let i = 0; i < bytes.length; i += 8192) {
+    const sub = bytes.subarray(i, i + 8192);
+    str += String.fromCharCode.apply(null, sub);
+  }
+  return str;
+}
+
+/**
+ * Get Uint8Array byte buffer from file input using modern Expo SDK 54 File API
  */
 async function getFileBytes(fileInput) {
   if (Platform.OS === 'web') {
@@ -48,17 +79,27 @@ async function getFileBytes(fileInput) {
     return new Uint8Array(buffer);
   } else {
     const uri = typeof fileInput === 'string' ? fileInput : fileInput?.uri;
-    const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    return base64ToUint8Array(base64);
+    try {
+      const file = new ExpoFile(uri);
+      return await file.bytes();
+    } catch (e) {
+      console.warn('ExpoFile.bytes fallback:', e);
+      const legacyFS = require('expo-file-system/legacy');
+      const base64 = await legacyFS.readAsStringAsync(uri, {
+        encoding: legacyFS.EncodingType?.Base64 || 'base64',
+      });
+      return base64ToUint8Array(base64);
+    }
   }
 }
 
 /**
- * Get raw string content from file input
+ * Get raw string content from file input using modern Expo SDK 54 File API
  */
-async function getFileText(fileInput) {
+async function getFileText(fileInput, existingBytes = null) {
+  if (existingBytes && existingBytes.length > 0) {
+    return uint8ArrayToString(existingBytes);
+  }
   if (Platform.OS === 'web') {
     if (fileInput instanceof Blob || (typeof File !== 'undefined' && fileInput instanceof File)) {
       return await fileInput.text();
@@ -67,7 +108,14 @@ async function getFileText(fileInput) {
     return await response.text();
   } else {
     const uri = typeof fileInput === 'string' ? fileInput : fileInput?.uri;
-    return await FileSystem.readAsStringAsync(uri);
+    try {
+      const file = new ExpoFile(uri);
+      return await file.text();
+    } catch (e) {
+      console.warn('ExpoFile.text fallback:', e);
+      const legacyFS = require('expo-file-system/legacy');
+      return await legacyFS.readAsStringAsync(uri);
+    }
   }
 }
 
@@ -112,51 +160,34 @@ export function stripMarkdown(mdText) {
  */
 function decodePdfString(pdfStr) {
   if (!pdfStr) return '';
-  const decoded = pdfStr
+  return pdfStr
     .replace(/\\([()])/g, '$1')
     .replace(/\\n/g, ' ')
     .replace(/\\r/g, ' ')
     .replace(/\\t/g, ' ')
     .replace(/\\(\d{3})/g, (m, oct) => {
       const code = parseInt(oct, 8);
-      return code >= 32 && code <= 126 ? String.fromCharCode(code) : ' ';
+      return String.fromCharCode(code);
     });
-
-  let clean = '';
-  for (let i = 0; i < decoded.length; i++) {
-    const code = decoded.charCodeAt(i);
-    if (code >= 32 && code <= 126) {
-      clean += decoded[i];
-    } else if (code === 10 || code === 13 || code === 9) {
-      clean += ' ';
-    }
-  }
-  return clean;
 }
 
 /**
- * Helper to parse PDF hex string literals (<48656c6c6f>) safely (handles 2-byte ASCII and 4-byte UTF-16BE)
+ * Helper to parse PDF hex string literals (<48656c6c6f>) safely
  */
 function parseHexPdfString(hex) {
   if (!hex) return '';
   let str = '';
-  let asciiCount = 0;
-  for (let i = 0; i < hex.length; i += 2) {
-    const code = parseInt(hex.substring(i, i + 2), 16);
-    if ((code >= 32 && code <= 126) || code === 10 || code === 13 || code === 9) {
-      asciiCount++;
+  if (hex.length % 4 === 0) {
+    for (let i = 0; i < hex.length; i += 4) {
+      const code = parseInt(hex.substring(i, i + 4), 16);
+      if (code >= 32 && code <= 0xd7ff) str += String.fromCharCode(code);
     }
   }
-  if (asciiCount >= Math.floor(hex.length / 4)) {
+  if (!str) {
     for (let i = 0; i < hex.length; i += 2) {
       const code = parseInt(hex.substring(i, i + 2), 16);
       if (code >= 32 && code <= 126) str += String.fromCharCode(code);
       else if (code === 10 || code === 13 || code === 9) str += ' ';
-    }
-  } else {
-    for (let i = 0; i < hex.length; i += 4) {
-      const code = parseInt(hex.substring(i, i + 4), 16);
-      if (code >= 32 && code <= 0xd7ff) str += String.fromCharCode(code);
     }
   }
   return str;
@@ -178,7 +209,7 @@ function parsePdfStreamText(decompressedStr) {
   }
 
   // 2. Match TJ array literals: [(Hello) -10 (World) <48656c6c6f>] TJ
-  const tjArrayRegex = /\[\s*((?:\((?:[^()\\]*(?:\\.[^()\\]*)*)\)|<[0-9a-fA-F]*>|-?\d+(?:\.\d+)?|\s+)+)\]\s*TJ/g;
+  const tjArrayRegex = /\[\s*((?:\((?:[^()\\]*(?:\\.[^()\\]*)*)\)|<[0-9a-fA-F]*>|-?\d+(?:\.\d+)?|\s+)+)\]\s*TJ/gi;
   while ((match = tjArrayRegex.exec(decompressedStr)) !== null) {
     const arrayContent = match[1];
     const innerTjRegex = /\(([^()\\]*(?:\\.[^()\\]*)*)\)/g;
@@ -211,12 +242,61 @@ function parsePdfStreamText(decompressedStr) {
 }
 
 /**
- * Extract plain text from a PDF file using pure JS stream decompression (Hermes & Web safe, zero DOM dependencies)
+ * Extract plain text from a PDF file using PDF.js legacy engine (resolves CMaps, ToUnicode, and page fonts)
  */
-export async function parsePdf(fileInput) {
+export async function parsePdf(fileInput, existingBytes = null) {
   try {
-    const bytes = await getFileBytes(fileInput);
+    const bytes = existingBytes || (await getFileBytes(fileInput));
 
+    // Primary: Use PDFJS legacy build configured for inline non-worker execution
+    try {
+      if (typeof globalThis !== 'undefined') {
+        if (!globalThis.window) globalThis.window = globalThis;
+        if (globalThis.navigator) {
+          if (typeof globalThis.navigator.platform !== 'string') {
+            globalThis.navigator.platform = '';
+          }
+          if (typeof globalThis.navigator.userAgent !== 'string') {
+            globalThis.navigator.userAgent = '';
+          }
+        } else {
+          globalThis.navigator = { platform: '', userAgent: '' };
+        }
+      }
+      const pdfjsWorker = require('pdfjs-dist/legacy/build/pdf.worker.js');
+      if (typeof globalThis !== 'undefined') {
+        globalThis.pdfjsWorker = pdfjsWorker;
+      }
+      const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
+
+      const loadingTask = pdfjsLib.getDocument({
+        data: bytes,
+        disableWorker: true,
+        isEvalSupported: false,
+        useSystemFonts: true,
+      });
+
+      const pdfDoc = await loadingTask.promise;
+      let pdfjsText = '';
+
+      for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+        const page = await pdfDoc.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageItems = textContent.items.map(item => item.str).filter(Boolean);
+        if (pageItems.length > 0) {
+          pdfjsText += pageItems.join(' ') + ' ';
+        }
+      }
+
+      const cleanedPdfjsText = pdfjsText.replace(/\s+/g, ' ').trim();
+      if (cleanedPdfjsText.length > 0) {
+        return cleanedPdfjsText;
+      }
+    } catch (pdfjsErr) {
+      console.warn('PDFJS extraction notice, trying stream fallback:', pdfjsErr);
+    }
+
+    // Secondary Fallback: Stream FlateDecode inspection
     let extractedText = '';
     let i = 0;
     while (i < bytes.length - 6) {
@@ -260,15 +340,9 @@ export async function parsePdf(fileInput) {
 
           try {
             const decompressed = pako.inflate(streamBytes);
-            for (let k = 0; k < decompressed.length; k += 8192) {
-              const sub = decompressed.subarray(k, k + 8192);
-              decompressedStr += String.fromCharCode.apply(null, sub);
-            }
+            decompressedStr = uint8ArrayToString(decompressed);
           } catch (inflateErr) {
-            for (let k = 0; k < streamBytes.length; k += 8192) {
-              const sub = streamBytes.subarray(k, k + 8192);
-              decompressedStr += String.fromCharCode.apply(null, sub);
-            }
+            decompressedStr = uint8ArrayToString(streamBytes);
           }
 
           if (decompressedStr) {
@@ -282,13 +356,19 @@ export async function parsePdf(fileInput) {
       }
     }
 
-    const cleanedFallback = extractedText
-      .replace(/[^\x20-\x7E\s]/g, '')
+    // Fallback: If no stream text extracted, search whole raw byte string
+    if (!extractedText.trim()) {
+      const rawPdfStr = uint8ArrayToString(bytes);
+      extractedText = parsePdfStreamText(rawPdfStr);
+    }
+
+    const cleanedText = extractedText
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 
-    if (cleanedFallback.length > 0) {
-      return cleanedFallback;
+    if (cleanedText.length > 0) {
+      return cleanedText;
     }
 
     return 'No readable text content could be extracted from this PDF file.';
@@ -301,9 +381,9 @@ export async function parsePdf(fileInput) {
 /**
  * Extract plain text from a Microsoft Word .docx file
  */
-export async function parseDocx(fileInput) {
+export async function parseDocx(fileInput, existingBytes = null) {
   try {
-    const bytes = await getFileBytes(fileInput);
+    const bytes = existingBytes || (await getFileBytes(fileInput));
     const zip = await JSZip.loadAsync(bytes);
     const docXmlFile = zip.file('word/document.xml');
 
@@ -312,7 +392,6 @@ export async function parseDocx(fileInput) {
     }
 
     const xmlText = await docXmlFile.async('text');
-    // Extract paragraph blocks (<w:p>) to preserve word/sentence spacing
     const paragraphMatches = xmlText.match(/<w:p[^>]*>[\s\S]*?<\/w:p>/g) || [xmlText];
     let fullText = '';
 
@@ -337,9 +416,9 @@ export async function parseDocx(fileInput) {
 /**
  * Extract plain text from an OpenDocument .odt file
  */
-export async function parseOdt(fileInput) {
+export async function parseOdt(fileInput, existingBytes = null) {
   try {
-    const bytes = await getFileBytes(fileInput);
+    const bytes = existingBytes || (await getFileBytes(fileInput));
     const zip = await JSZip.loadAsync(bytes);
     const contentXmlFile = zip.file('content.xml');
 
@@ -358,9 +437,9 @@ export async function parseOdt(fileInput) {
 /**
  * Extract plain text from an EPUB file
  */
-export async function parseEpub(fileInput) {
+export async function parseEpub(fileInput, existingBytes = null) {
   try {
-    const bytes = await getFileBytes(fileInput);
+    const bytes = existingBytes || (await getFileBytes(fileInput));
     const zip = await JSZip.loadAsync(bytes);
 
     let fullText = '';
@@ -390,9 +469,9 @@ export async function parseEpub(fileInput) {
 /**
  * Extract plain text from an RTF file
  */
-export async function parseRtf(fileInput) {
+export async function parseRtf(fileInput, existingBytes = null) {
   try {
-    const rawRtf = await getFileText(fileInput);
+    const rawRtf = await getFileText(fileInput, existingBytes);
     const cleanText = rawRtf
       .replace(/{\\fonttbl[\s\S]*?}/gi, '')
       .replace(/{\\colortbl[\s\S]*?}/gi, '')
@@ -419,6 +498,10 @@ export async function parseFileToText(fileInput, fileName = '') {
   try {
     const bytes = await getFileBytes(fileInput);
 
+    if (!bytes || bytes.length === 0) {
+      return await getFileText(fileInput);
+    }
+
     // 1. Check Magic Byte Signatures:
     // PDF Magic Number: %PDF (0x25 0x50 0x44 0x46)
     const isPdfHeader =
@@ -438,7 +521,7 @@ export async function parseFileToText(fileInput, fileName = '') {
 
     if (isPdfHeader) {
       console.log('Auto-detected PDF file by magic header signature');
-      return await parsePdf(fileInput);
+      return await parsePdf(fileInput, bytes);
     }
 
     if (isZipHeader) {
@@ -446,26 +529,26 @@ export async function parseFileToText(fileInput, fileName = '') {
         const zip = await JSZip.loadAsync(bytes);
         if (zip.file('word/document.xml')) {
           console.log('Auto-detected Microsoft Word .docx file by zip contents');
-          return await parseDocx(fileInput);
+          return await parseDocx(fileInput, bytes);
         }
         if (zip.file('content.xml')) {
           console.log('Auto-detected OpenDocument .odt file by zip contents');
-          return await parseOdt(fileInput);
+          return await parseOdt(fileInput, bytes);
         }
       } catch (zipErr) {
         console.warn('Failed zip structure check:', zipErr);
       }
 
       console.log('Auto-detected EPUB/ZIP file by magic header signature');
-      return await parseEpub(fileInput);
+      return await parseEpub(fileInput, bytes);
     }
 
     // 2. Check Text-based Signatures (RTF / HTML / XML)
-    const textHeader = String.fromCharCode.apply(null, Array.from(bytes.slice(0, 512))).trim();
+    const textHeader = uint8ArrayToString(bytes.subarray(0, Math.min(512, bytes.length))).trim();
 
     if (textHeader.startsWith('{\\rtf')) {
       console.log('Auto-detected RTF file by magic text header');
-      return await parseRtf(fileInput);
+      return await parseRtf(fileInput, bytes);
     }
 
     const lowerHeader = textHeader.toLowerCase();
@@ -477,7 +560,7 @@ export async function parseFileToText(fileInput, fileName = '') {
       lowerHeader.includes('<head')
     ) {
       console.log('Auto-detected HTML/XML file by text header');
-      const rawText = await getFileText(fileInput);
+      const rawText = await getFileText(fileInput, bytes);
       return stripHtml(rawText);
     }
 
@@ -486,23 +569,23 @@ export async function parseFileToText(fileInput, fileName = '') {
     const lowerName = name.toLowerCase();
 
     if (lowerName.endsWith('.pdf')) {
-      return await parsePdf(fileInput);
+      return await parsePdf(fileInput, bytes);
     } else if (lowerName.endsWith('.docx')) {
-      return await parseDocx(fileInput);
+      return await parseDocx(fileInput, bytes);
     } else if (lowerName.endsWith('.odt')) {
-      return await parseOdt(fileInput);
+      return await parseOdt(fileInput, bytes);
     } else if (lowerName.endsWith('.epub')) {
-      return await parseEpub(fileInput);
+      return await parseEpub(fileInput, bytes);
     } else if (lowerName.endsWith('.rtf')) {
-      return await parseRtf(fileInput);
+      return await parseRtf(fileInput, bytes);
     } else if (lowerName.endsWith('.md') || lowerName.endsWith('.markdown')) {
-      const rawText = await getFileText(fileInput);
+      const rawText = await getFileText(fileInput, bytes);
       return stripMarkdown(rawText);
     } else if (lowerName.endsWith('.html') || lowerName.endsWith('.htm')) {
-      const rawText = await getFileText(fileInput);
+      const rawText = await getFileText(fileInput, bytes);
       return stripHtml(rawText);
     } else {
-      return await getFileText(fileInput);
+      return await getFileText(fileInput, bytes);
     }
   } catch (err) {
     console.warn('Magic signature check fallback, reading as plain text:', err);
