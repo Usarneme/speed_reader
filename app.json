@@ -23,7 +23,7 @@
       "usesIcloudStorage": true
     },
     "android": {
-      "versionCode": 12,
+      "versionCode": 13,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Miami_potato_square.png",
         "backgroundColor": "#eeeeee"
