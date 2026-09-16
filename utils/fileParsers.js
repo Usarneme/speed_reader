@@ -1,7 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 import JSZip from 'jszip';
 import pako from 'pako';
-import { extractText as unpdfExtractText } from 'unpdf';
 import { Platform } from 'react-native';
 
 /**
@@ -212,35 +211,12 @@ function parsePdfStreamText(decompressedStr) {
 }
 
 /**
- * Extract plain text from a PDF file using unpdf (Hermes & Web safe, 100% clean text output)
+ * Extract plain text from a PDF file using pure JS stream decompression (Hermes & Web safe, zero DOM dependencies)
  */
 export async function parsePdf(fileInput) {
   try {
     const bytes = await getFileBytes(fileInput);
 
-    // Primary: Use industry-standard unpdf engine for page & font CMap text extraction
-    try {
-      const { text } = await unpdfExtractText(bytes);
-      let combinedText = '';
-      if (Array.isArray(text)) {
-        combinedText = text.join(' ');
-      } else if (typeof text === 'string') {
-        combinedText = text;
-      }
-
-      const cleaned = combinedText
-        .replace(/[^\x20-\x7E\s]/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      if (cleaned.length > 0) {
-        return cleaned;
-      }
-    } catch (unpdfErr) {
-      console.warn('unpdf extraction notice, trying stream fallback:', unpdfErr);
-    }
-
-    // Secondary Fallback: Stream FlateDecode inspection
     let extractedText = '';
     let i = 0;
     while (i < bytes.length - 6) {

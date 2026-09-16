@@ -37,8 +37,8 @@ export default function FileSelectMobile(props) {
       let uri = asset.uri;
       const name = asset.name || 'document.txt';
 
-      if (uri && uri.substring(0, 4) !== 'file' && uri.substring(0, 4) !== 'http') {
-        uri = 'file:' + uri;
+      if (uri && !uri.startsWith('file:') && !uri.startsWith('content:') && !uri.startsWith('http:') && !uri.startsWith('https:')) {
+        uri = 'file://' + uri;
       }
 
       await readFileContent(uri, name);
